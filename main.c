@@ -144,4 +144,26 @@ void FCFS2(int orderno){
         int daysrequired = calculate_no_days(plant_produced, days_used, orders, Plant_X, Plant_Y, Plant_Z, i); //calculating the number of days required for order index i
     }
 }
+void RR(int orderno){ //round-robin giving 1 day to each product
+    int round = 0; //round number
+    int done; // number of orders completed
+    while(1){ //loop until done
+    done = 0; //checks how many orders completed each round
+    int j; //round robin behaviour
+    for(j = 0; j < orderno; j++){
+        if(atoi(orders[j][2]) > (X_CAPACITY + Y_CAPACITY + Z_CAPACITY) * round){
+            
+        }
+        else{
+            done++;
+        }
+    }
+    if(done == orderno){
+        break;
+    }
+    round++;
+    
+
+    }
+}
 
