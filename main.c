@@ -245,10 +245,55 @@ void FCFS2(int orderno){
     }
 }
 
-void updateX(int value, int i){
-    
+void updateX(int value, int i, char* currdate ){
+    strcpy(Plant_X[X_pointer][0], currdate); // setting current date as the date
+    strcpy(Plant_X[X_pointer][1], orders[i][3]);
+    strcpy(Plant_X[X_pointer][2], orders[i][0]);
+    strcpy(Plant_X[X_pointer][4], orders[i][1]);
+    if(value >= X_CAPACITY){
+    strcpy(Plant_X[X_pointer][3], "300\0");
+    }
+    else{
+        char v[4];
+        sprintf(v,"%ld", value);
+        strcpy(Plant_X[X_pointer][3], v);
+    }
+    X_pointer++;
 }
+void updateY(int value, int i, char* currdate ){
+    strcpy(Plant_Y[Y_pointer][0], currdate); // setting current date as the date
+    strcpy(Plant_Y[Y_pointer][1], orders[i][3]);
+    strcpy(Plant_Y[Y_pointer][2], orders[i][0]);
+    strcpy(Plant_Y[Y_pointer][4], orders[i][1]);
+    if(value >= Y_CAPACITY){
+    strcpy(Plant_Y[Y_pointer][3], "400\0");
+    }
+    else{
+        char v[4];
+        sprintf(v,"%ld", value);
+        strcpy(Plant_Y[Y_pointer][3], v);
+    }
+    Y_pointer++;
+}
+
+void updateZ(int value, int i, char* currdate ){
+    strcpy(Plant_Z[Z_pointer][0], currdate); // setting current date as the date
+    strcpy(Plant_Z[Z_pointer][1], orders[i][3]);
+    strcpy(Plant_Z[Z_pointer][2], orders[i][0]);
+    strcpy(Plant_Z[Z_pointer][4], orders[i][1]);
+    if(value >= Z_CAPACITY){
+    strcpy(Plant_Z[Z_pointer][3], "500\0");
+    }
+    else{
+        char v[4];
+        sprintf(v,"%ld", value);
+        strcpy(Plant_Z[Z_pointer][3], v);
+    }
+    Z_pointer++;
+}
+
 void RR(int orderno){ //round-robin giving 1 day to each product
+    char currdate[] = strcpy(currdate, startdate);
     int round = 0; //round number
     int done; // number of orders completed
     while(1){ //loop until done
@@ -262,7 +307,7 @@ void RR(int orderno){ //round-robin giving 1 day to each product
         int todo = atoi(orders[j][2]);
         if(todo > (X_CAPACITY + Y_CAPACITY + Z_CAPACITY) * round){
             if(todo > 500 && todo <= 700){
-
+                
             }
         }
         else{
