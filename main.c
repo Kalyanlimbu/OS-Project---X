@@ -95,11 +95,38 @@ void FCFS(char InputFile[40], char OutputFile[40]){
 }
 
 
-    int calculate_no_days(int *plant_produced, int *days_used, char *orders, char *Plant_X, char *Plant_Y, char *Plant_Z, int i)
+    int calculate_no_days(int *plant_produced, int *days_used, char orders[100][4][11], char *Plant_X, char *Plant_Y, char *Plant_Z, int i)
     {
-        int quantity = atoi(&orders[i][2][11]); // Convert string to integer
+        int quantity;
+        sscanf(orders[i][2], "%d", &quantity);
+        while(quantity != 0)
+        {
+            if(quantity >= 500)
+            {
+                quantity -= Z_CAPACITY;
+                plant_produced[2] += 1;
+                days_used[2] += 1;
+            }
+            else if(quantity <= 400 && quantity >= 300)
+            {
+                quantity  -= Y_CAPACITY;
+                plant_produced[1] += 1;
+                days_used[1] += 1;
 
-        return quantity; // Return the extracted quantity
+            }
+            else{
+                quantity -= X_CAPACITY;
+                plant_produced[0] += 1;
+                days_used[0] += 1;
+
+
+            }
+
+        }
+
+
+
+
     }
 
 
@@ -112,8 +139,8 @@ void FCFS2(int orderno){
     //Where 0 = X (300), 1 = Y (400), 2 = Z (500)
     int plant_produced[3] = {0,0,0};
     int days_used[3] = {0,0,0};
-
-    for(int i = 0; i < orderno; i++){
+    int i = 0;
+    for(i = 0; i < orderno; i++){
         int daysrequired = calculate_no_days(plant_produced, days_used, orders, Plant_X, Plant_Y, Plant_Z, i); //calculating the number of days required for order index i
     }
 }
