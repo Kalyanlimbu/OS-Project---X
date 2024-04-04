@@ -13,15 +13,71 @@
 char argv[ARGV_SIZE][100];
 // char startDate[MAX_ORDERS];
 // char endDate[MAX_ORDERS];
+char startdate[11]; // period start date
+char enddate[11]; // period end date
+
 char orders[100][4][11]; 
 char Plant_X[30][5][11];// Assuming 100 orders max, 4 attributes each, 11 characters max per attribute
 char Plant_Y[30][5][11];
 char Plant_Z[30][5][11];
 
+int X_pointer = 0;
+int Y_pointer = 0;
+int Z_pointer = 0;
+
+
+char* get_next_day(char* current_date) {
+    // Extract year, month, and day from the input string
+    int year, month, day;
+    sscanf(current_date, "%d-%d-%d", &year, &month, &day);
+
+    // Calculate the next day
+    if (day < 28) {
+        day++;
+    } else {
+        // Handle month end
+        if (day == 28) {
+            if (month == 2 && (year % 4 == 0 && year % 100 != 0 || year % 400 == 0)) {
+                // Leap year
+                day++;
+            } else {
+                day = 1;
+                month++;
+            }
+        } else if (day == 29) {
+            if (month == 2) {
+                day = 1;
+                month++;
+            } else {
+                day++;
+            }
+        } else if (day == 30) {
+            if (month == 4 || month == 6 || month == 9 || month == 11) {
+                day = 1;
+                month++;
+            } else {
+                day++;
+            }
+        } else { // day == 31
+            if (month == 12) {
+                day = 1;
+                month = 1;
+                year++;
+            } else {
+                day = 1;
+                month++;
+            }
+        }
+    }
+
+    // Convert the next day back to string format
+    static char next_day[11]; // "YYYY-MM-DD\0"
+    sprintf(next_day, "%04d-%02d-%02d", year, month, day);
+
+    return next_day;
+}
 
 int main(){
-    char startdate[11]; // period start date
-    char enddate[11]; // period end date
     int orderno = 0; // number of orders
     strcpy(startdate, "2024-06-01");
     strcpy(enddate, "2024-06-10");
@@ -188,15 +244,26 @@ void FCFS2(int orderno){
         int daysrequired = calculate_no_days(plant_produced, days_used, orders, Plant_X, Plant_Y, Plant_Z, i); //calculating the number of days required for order index i
     }
 }
+
+void updateX(int value, int i){
+    
+}
 void RR(int orderno){ //round-robin giving 1 day to each product
     int round = 0; //round number
     int done; // number of orders completed
     while(1){ //loop until done
     done = 0; //checks how many orders completed each round
     int j; //round robin behaviour
+
+    int plant_produced[3] = {0,0,0};
+    int days_used[3] = {0,0,0};
+
     for(j = 0; j < orderno; j++){
-        if(atoi(orders[j][2]) > (X_CAPACITY + Y_CAPACITY + Z_CAPACITY) * round){
-            
+        int todo = atoi(orders[j][2]);
+        if(todo > (X_CAPACITY + Y_CAPACITY + Z_CAPACITY) * round){
+            if(todo > 500 && todo <= 700){
+
+            }
         }
         else{
             done++;
