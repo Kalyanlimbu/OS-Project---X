@@ -131,9 +131,7 @@ void FCFS(char InputFile[40], char OutputFile[40]){
 
 
 
-// Hello manish rai
-// hello
-// hello
+
     
 
 //uses best-fit
