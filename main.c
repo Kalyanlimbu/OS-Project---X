@@ -2,10 +2,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+
 #define X_CAPACITY 300
 #define Y_CAPACITY 400
 #define Z_CAPACITY 500
+#define ARGV_SIZE 100
+#define MAX_ORDERS 50 // placeholder number for max number of orders
 
+char * argv[ARGV_SIZE];
+char startDate[MAX_ORDERS];
+char endDate[MAX_ORDERS];
 
 int main(){
     char startdate[11]; //period start date
@@ -24,4 +30,23 @@ int main(){
 
 
 
-} ⁠
+}
+
+void FCFS(char InputFile[40], char OutputFile[40]){
+    int day_count=0;
+    char startDate[MAX_ORDERS];
+    char endDate[MAX_ORDERS];
+    char dueDate[MAX_ORDERS];
+    char productRequired[MAX_ORDERS];
+    char quantity[MAX_ORDERS];
+    FILE *input_file;
+    FILE *output_file;
+    input_file=fopen(InputFile,"Read");
+    output_file = fopen(OutputFile,"Write");
+
+    if (input_file==NULL) { 
+        printf("File not available\n"); 
+        exit(0);     
+}
+
+}
