@@ -218,15 +218,9 @@ void FCFS(char InputFile[40], char OutputFile[40]){
                 strcpy(Plant_X[i][2], quantity);
                 strcpy(Plant_X[i][3], due_Date);
 
-
-
             }
 
         }
-
-
-
-
     }
 
 
