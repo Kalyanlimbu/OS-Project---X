@@ -84,4 +84,5 @@ void FCFS(char InputFile[40], char OutputFile[40]){
     if (input_file==NULL) { 
         printf("File not available\n"); 
         exit(0);     
+    }
 }
