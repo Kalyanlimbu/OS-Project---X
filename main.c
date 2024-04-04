@@ -117,4 +117,4 @@ void FCFS2(int orderno){
         int daysrequired = calculate_no_days(plant_produced, days_used, orders, Plant_X, Plant_Y, Plant_Z, i); //calculating the number of days required for order index i
     }
 }
-}
+
