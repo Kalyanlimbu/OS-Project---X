@@ -151,7 +151,7 @@ void FCFS(char InputFile[40], char OutputFile[40]){
 }
 
 
-    int calculate_no_days(int *plant_produced, int *days_used, char orders[100][4][11], char Plant_X[30][4][11], char Plant_Y[30][4][11], char Plant_Z[30][4][11], int i,char *startdate )
+    int calculate_no_days(int *plant_produced, int *days_used, char orders[100][4][11], char Plant_X[30][4][11], char Plant_Y[30][4][11], char Plant_Z[30][4][11], int i )
     {
         int quantity;
         char Starting_date[11];
@@ -218,15 +218,9 @@ void FCFS(char InputFile[40], char OutputFile[40]){
                 strcpy(Plant_X[i][2], quantity);
                 strcpy(Plant_X[i][3], due_Date);
 
-
-
             }
 
         }
-
-
-
-
     }
 
 
@@ -241,7 +235,7 @@ void FCFS2(int orderno){
     int days_used[3] = {0,0,0};
     int i = 0;
     for(i = 0; i < orderno; i++){
-        int daysrequired = calculate_no_days(plant_produced, days_used, orders, Plant_X, Plant_Y, Plant_Z, i, startdate); //calculating the number of days required for order index i
+        int daysrequired = calculate_no_days(plant_produced, days_used, orders, Plant_X, Plant_Y, Plant_Z, i); //calculating the number of days required for order index i
     }
 }
 
