@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 
+
 #define X_CAPACITY 300
 #define Y_CAPACITY 400
 #define Z_CAPACITY 500
@@ -10,17 +11,21 @@
 #define MAX_ORDERS 50 // placeholder number for max number of orders
 
 char argv[ARGV_SIZE][100];
-char startDate[MAX_ORDERS];
-char endDate[MAX_ORDERS];
+// char startDate[MAX_ORDERS];
+// char endDate[MAX_ORDERS];
+char orders[100][4][11]; 
+char Plant_X[30][4][11];// Assuming 100 orders max, 4 attributes each, 11 characters max per attribute
+char Plant_Y[30][4][11];
+char Plant_Z[30][4][11];
 
 
 int main(){
     char startdate[11]; // period start date
     char enddate[11]; // period end date
+    int orderno = 0; // number of orders
     strcpy(startdate, "2024-06-01");
     strcpy(enddate, "2024-06-10");
 
-    char orders[100][4][11]; // Assuming 100 orders max, 4 attributes each, 11 characters max per attribute
 
     // Initialize orders using strcpy for each string
     // Order 0
@@ -64,7 +69,8 @@ int main(){
     // Example of accessing an order's attributes:
     printf("Order ID: %s, Date: %s, Quantity: %s, Product: %s\n",
            orders[0][0], orders[0][1], orders[0][2], orders[0][3]);
-
+    
+    FCFS2(6);
     return 0;
 }
 
@@ -86,10 +92,29 @@ void FCFS(char InputFile[40], char OutputFile[40]){
         exit(0);     
     }
 
+}
 
+
+    int calculate_no_days(int *plant_produced, int *days_used, char *orders, char *Plant_X, char *Plant_Y, char *Plant_Z, int i)
+    {
+        int quantity = atoi(&orders[i][2][11]); // Convert string to integer
+
+        return quantity; // Return the extracted quantity
+    }
 
 
 
 
     
+
+//uses best-fit
+void FCFS2(int orderno){
+    //Where 0 = X (300), 1 = Y (400), 2 = Z (500)
+    int plant_produced[3] = {0,0,0};
+    int days_used[3] = {0,0,0};
+
+    for(int i = 0; i < orderno; i++){
+        int daysrequired = calculate_no_days(plant_produced, days_used, orders, Plant_X, Plant_Y, Plant_Z, i); //calculating the number of days required for order index i
+    }
+}
 }
