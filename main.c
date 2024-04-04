@@ -17,6 +17,7 @@ char endDate[MAX_ORDERS];
 int main(){
     char startdate[11]; // period start date
     char enddate[11]; // period end date
+    int orderno = 0; // number of orders
     strcpy(startdate, "2024-06-01");
     strcpy(enddate, "2024-06-10");
 
@@ -64,7 +65,8 @@ int main(){
     // Example of accessing an order's attributes:
     printf("Order ID: %s, Date: %s, Quantity: %s, Product: %s\n",
            orders[0][0], orders[0][1], orders[0][2], orders[0][3]);
-
+    
+    FCFS2(6);
     return 0;
 }
 
@@ -84,4 +86,21 @@ void FCFS(char InputFile[40], char OutputFile[40]){
     if (input_file==NULL) { 
         printf("File not available\n"); 
         exit(0);     
+    }
+}
+
+
+//uses best-fit
+int calculate_no_days(int *plant_produced, int* days_used){
+
+}
+
+void FCFS2(int orderno){
+    //Where 0 = X (300), 1 = Y (400), 2 = Z (500)
+    int plant_produced[3] = {0,0,0};
+    int days_used[3] = {0,0,0};
+
+    for(int i = 0; i < orderno; i++){
+        int daysrequired = calculate_no_days(plant_produced, days_used); //calculating the number of days required for order index i
+    }
 }
