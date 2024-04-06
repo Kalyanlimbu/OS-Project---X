@@ -122,11 +122,41 @@ int main(){
 
     // Remember, for more orders, continue with similar pattern...
     
-    // Example of accessing an order's attributes:
-    printf("Order ID: %s, Date: %s, Quantity: %s, Product: %s\n",
-           orders[0][0], orders[0][1], orders[0][2], orders[0][3]);
     
-    FCFS2(6);
+    RR(6);
+    for (int i = 0; i < 6; i++) {
+        printf("Plant_X[%d]:\n", i);
+        for (int j = 0; j < 5; j++) {
+            printf("    ");
+            for (int k = 0; k < 11; k++) {
+                printf("%c", Plant_X[i][j][k]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+    for (int i = 0; i < 6; i++) {
+        printf("Plant_Y[%d]:\n", i);
+        for (int j = 0; j < 5; j++) {
+            printf("    ");
+            for (int k = 0; k < 11; k++) {
+                printf("%c", Plant_Y[i][j][k]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+    for (int i = 0; i < 6; i++) {
+        printf("Plant_Z[%d]:\n", i);
+        for (int j = 0; j < 5; j++) {
+            printf("    ");
+            for (int k = 0; k < 11; k++) {
+                printf("%c", Plant_Z[i][j][k]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
     return 0;
 }
 
@@ -151,77 +181,77 @@ void FCFS(char InputFile[40], char OutputFile[40]){
 }
 
 
-    int calculate_no_days(int *plant_produced, int *days_used, char orders[100][4][11], char Plant_X[30][4][11], char Plant_Y[30][4][11], char Plant_Z[30][4][11], int i )
-    {
-        int quantity;
-        char Starting_date[11];
-        char product_No[11], due_Date[11], product_Name[11];
-        strcpy(product_No, orders[i][0]);
-        strcpy(due_Date, orders[i][1]);
-        sscanf(orders[i][2], "%d", &quantity);
-        strcpy(product_Name, orders[i][3]);
-        strcpy(Starting_date, startdate);
-        while(quantity != 0)
-        {
-            if(quantity <= 700 || quantity >= 501)
-            {
-                quantity  -= Y_CAPACITY;
-                plant_produced[1] += 1;
-                days_used[1] += 1;
-                strcpy(Plant_Y[i][0], Starting_date);
-                strcpy(Plant_Y[i][1], product_Name);
-                strcpy(Plant_Y[i][2], product_No);
-                strcpy(Plant_Y[i][2], quantity);
-                strcpy(Plant_Y[i][3], due_Date);
+    // int calculate_no_days(int *plant_produced, int *days_used, char orders[100][4][11], char Plant_X[30][4][11], char Plant_Y[30][4][11], char Plant_Z[30][4][11], int i )
+    // {
+    //     int quantity;
+    //     char Starting_date[11];
+    //     char product_No[11], due_Date[11], product_Name[11];
+    //     strcpy(product_No, orders[i][0]);
+    //     strcpy(due_Date, orders[i][1]);
+    //     sscanf(orders[i][2], "%d", &quantity);
+    //     strcpy(product_Name, orders[i][3]);
+    //     strcpy(Starting_date, startdate);
+    //     while(quantity != 0)
+    //     {
+    //         if(quantity <= 700 || quantity >= 501)
+    //         {
+    //             quantity  -= Y_CAPACITY;
+    //             plant_produced[1] += 1;
+    //             days_used[1] += 1;
+    //             strcpy(Plant_Y[i][0], Starting_date);
+    //             strcpy(Plant_Y[i][1], product_Name);
+    //             strcpy(Plant_Y[i][2], product_No);
+    //             strcpy(Plant_Y[i][2], quantity);
+    //             strcpy(Plant_Y[i][3], due_Date);
 
-                quantity -= X_CAPACITY;
-                plant_produced[0] += 1;
-                days_used[0] += 1;
-                strcpy(Plant_X[i][0], Starting_date);
-                strcpy(Plant_X[i][1], product_Name);
-                strcpy(Plant_X[i][2], product_No);
-                strcpy(Plant_X[i][2], quantity);
-                strcpy(Plant_X[i][3], due_Date);
+    //             quantity -= X_CAPACITY;
+    //             plant_produced[0] += 1;
+    //             days_used[0] += 1;
+    //             strcpy(Plant_X[i][0], Starting_date);
+    //             strcpy(Plant_X[i][1], product_Name);
+    //             strcpy(Plant_X[i][2], product_No);
+    //             strcpy(Plant_X[i][2], quantity);
+    //             strcpy(Plant_X[i][3], due_Date);
 
 
-            }
-            else if(quantity >= 500){
+    //         }
+    //         else if(quantity >= 500){
             
-                quantity -= Z_CAPACITY;
-                plant_produced[2] += 1;
-                days_used[2] += 1;
-                strcpy(Plant_Z[i][0], Starting_date);
-                strcpy(Plant_Z[i][1], product_Name);
-                strcpy(Plant_Z[i][2], product_No);
-                strcpy(Plant_Z[i][2], quantity);
-                strcpy(Plant_Z[i][3], due_Date);
-            }
-            else if(quantity <= 400 && quantity >= 300)
-            {
-                quantity  -= Y_CAPACITY;
-                plant_produced[1] += 1;
-                days_used[1] += 1;
-                strcpy(Plant_Y[i][0], Starting_date);
-                strcpy(Plant_Y[i][1], product_Name);
-                strcpy(Plant_Y[i][2], product_No);
-                strcpy(Plant_Y[i][2], quantity);
-                strcpy(Plant_Y[i][3], due_Date);
+    //             quantity -= Z_CAPACITY;
+    //             plant_produced[2] += 1;
+    //             days_used[2] += 1;
+    //             strcpy(Plant_Z[i][0], Starting_date);
+    //             strcpy(Plant_Z[i][1], product_Name);
+    //             strcpy(Plant_Z[i][2], product_No);
+    //             strcpy(Plant_Z[i][2], quantity);
+    //             strcpy(Plant_Z[i][3], due_Date);
+    //         }
+    //         else if(quantity <= 400 && quantity >= 300)
+    //         {
+    //             quantity  -= Y_CAPACITY;
+    //             plant_produced[1] += 1;
+    //             days_used[1] += 1;
+    //             strcpy(Plant_Y[i][0], Starting_date);
+    //             strcpy(Plant_Y[i][1], product_Name);
+    //             strcpy(Plant_Y[i][2], product_No);
+    //             strcpy(Plant_Y[i][2], quantity);
+    //             strcpy(Plant_Y[i][3], due_Date);
 
-            }
-            else{
-                quantity -= X_CAPACITY;
-                plant_produced[0] += 1;
-                days_used[0] += 1;
-                strcpy(Plant_X[i][0], Starting_date);
-                strcpy(Plant_X[i][1], product_Name);
-                strcpy(Plant_X[i][2], product_No);
-                strcpy(Plant_X[i][2], quantity);
-                strcpy(Plant_X[i][3], due_Date);
+    //         }
+    //         else{
+    //             quantity -= X_CAPACITY;
+    //             plant_produced[0] += 1;
+    //             days_used[0] += 1;
+    //             strcpy(Plant_X[i][0], Starting_date);
+    //             strcpy(Plant_X[i][1], product_Name);
+    //             strcpy(Plant_X[i][2], product_No);
+    //             strcpy(Plant_X[i][2], quantity);
+    //             strcpy(Plant_X[i][3], due_Date);
 
-            }
+    //         }
 
-        }
-    }
+    //     }
+    // }
 
 
 
@@ -229,15 +259,15 @@ void FCFS(char InputFile[40], char OutputFile[40]){
     
 
 //uses best-fit
-void FCFS2(int orderno){
-    //Where 0 = X (300), 1 = Y (400), 2 = Z (500)
-    int plant_produced[3] = {0,0,0};
-    int days_used[3] = {0,0,0};
-    int i = 0;
-    for(i = 0; i < orderno; i++){
-        int daysrequired = calculate_no_days(plant_produced, days_used, orders, Plant_X, Plant_Y, Plant_Z, i); //calculating the number of days required for order index i
-    }
-}
+// void FCFS2(int orderno){
+//     //Where 0 = X (300), 1 = Y (400), 2 = Z (500)
+//     int plant_produced[3] = {0,0,0};
+//     int days_used[3] = {0,0,0};
+//     int i = 0;
+//     for(i = 0; i < orderno; i++){
+//         int daysrequired = calculate_no_days(plant_produced, days_used, orders, Plant_X, Plant_Y, Plant_Z, i); //calculating the number of days required for order index i
+//     }
+// }
 
 void updateX(int value, int i, char* currdate ){
     strcpy(Plant_X[X_pointer][0], currdate); // setting current date as the date
@@ -287,7 +317,7 @@ void updateZ(int value, int i, char* currdate ){
 }
 
 void RR(int orderno){ //round-robin giving 1 day to each product
-    char currdate[] = strcpy(currdate, startdate);
+    char* currdate = startdate;
     int round = 0; //round number
     int done; // number of orders completed
     while(1){ //loop until done
@@ -301,13 +331,44 @@ void RR(int orderno){ //round-robin giving 1 day to each product
         int todo = atoi(orders[j][2]);
         if(todo > (X_CAPACITY + Y_CAPACITY + Z_CAPACITY) * round){
             if(todo > 500 && todo <= 700){
-                
+                updateY(todo, j, currdate);
+                todo -=400;
+                updateX(todo,j, currdate);
+                todo = 0;
+            }
+            if(todo>400){
+                updateZ(todo,j,currdate);
+                if(todo >= Z_CAPACITY){
+                    todo -= Z_CAPACITY;
+                    }
+                    else{
+                        todo = 0;
+                    }
+            }
+            if(todo>300 && todo<=400){
+                updateY(todo,j,currdate);
+                if(todo >= Y_CAPACITY){
+                    todo -= Y_CAPACITY;
+                    }
+                else{
+                    todo = 0;
+                }
+            }
+            if(todo<=300){
+                updateX(todo,j,currdate);
+                if(todo >= X_CAPACITY){
+                    todo -= X_CAPACITY;
+                    }
+                else{
+                    todo = 0;
+                }
             }
         }
         else{
             done++;
         }
     }
+    get_next_day(currdate);
     if(done == orderno){
         break;
     }
