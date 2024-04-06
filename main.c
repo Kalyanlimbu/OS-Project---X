@@ -9,12 +9,14 @@
 #define Z_CAPACITY 500
 #define ARGV_SIZE 100
 #define MAX_ORDERS 50 // placeholder number for max number of orders
+#define MAX_PLANTS 30
 
 char argv[ARGV_SIZE][100];
 // char startDate[MAX_ORDERS];
 // char endDate[MAX_ORDERS];
 char startdate[11]; // period start date
 char enddate[11]; // period end date
+
 
 char orders[100][4][11]; 
 char Plant_X[30][5][11];// Assuming 100 orders max, 4 attributes each, 11 characters max per attribute
