@@ -147,6 +147,28 @@ int convertDateToNumber(char* date) {
     }
 }
 
+void sortOrders(char orders[100][4][11], int orderno) {
+    char temp[4][11];
+    for (int i = 0; i < orderno -1; ++i) {
+        for (int j = i + 1; j < orderno; ++j) {
+            // Convert the third elements from char arrays to integers
+            int valueI = atoi(orders[i][2]);
+            int valueJ = atoi(orders[j][2]);
+            
+            // Compare and swap if out of order
+            if (valueI > valueJ) {
+                // Swap orders[i] and orders[j]
+                for (int k = 0; k < 4; ++k) {
+                    strcpy(temp[k], orders[i][k]);
+                    strcpy(orders[i][k], orders[j][k]);
+                    strcpy(orders[j][k], temp[k]);
+                }
+            }
+        }
+    }
+}
+
+   
 void store_Rejected_Products(int i)
 {
     strcpy(rejected_Products[rejected][0], orders[i][0]);
@@ -176,8 +198,8 @@ void FCFS(int orderno)
         if (quantity > remaining_Days * 1200)
         {
             store_Rejected_Products(i);
-            break;
-        }
+            continue;
+            }
         
         while(quantity != 0)
         {
@@ -249,7 +271,32 @@ void FCFS(int orderno)
         }
     }
 }
+void copyOrdersArray(const char source[100][4][11], char destination[100][4][11], int orderno) {
+    for (int i = 0; i < orderno; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            strcpy(destination[i][j], source[i][j]);
+        }
+    }
+}
+void SJF(int orderno){
+    // Auxiliary array of pointers for sorted order
+    char revert[100][4][11];
+    copyOrdersArray(orders,revert,orderno);
+    // Sort without changing the original array
 
+    sortOrders(orders,orderno);
+    for (int i = 0; i < orderno; i++) {
+        printf("Order %d:\n", i + 1);
+        for (int j = 0; j < 4; j++) {
+            // Assuming the strings are null-terminated,
+            // you can use %s to print the string at arr[i][j]
+            printf("\t%s\n", orders[i][j]);
+        }
+        printf("\n"); // Print a newline for better separation between orders
+    }
+    FCFS(orderno);
+    copyOrdersArray(revert, orders,orderno);
+}
 
 void RR(int orderno){ //round-robin giving 1 day to each product
     char* currdate = startdate;
@@ -361,7 +408,7 @@ int main(){
     
     
     //RR(6);
-    FCFS(6);
+    SJF(6);
     for (int i = 0; i < 6; i++) {
         printf("Plant_X[%d]:\n", i);
         for (int j = 0; j < 5; j++) {
