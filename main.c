@@ -22,7 +22,10 @@ char orders[100][4][11];
 char Plant_X[30][5][11];// Assuming 100 orders max, 4 attributes each, 11 characters max per attribute
 char Plant_Y[30][5][11];
 char Plant_Z[30][5][11];
+char rejected_Products[50][4][11];// Array to keep track of recjected product and right now we have only  
+//assumed max 50 products can be rejected but could increase if desired
 
+int rejected = 0; // To keep track of rejected products
 int X_pointer = 0;
 int Y_pointer = 0;
 int Z_pointer = 0;
@@ -126,6 +129,33 @@ void updateZ(int value, int i, char* currdate ){
     Z_pointer++;
 }
 
+int convertDateToNumber(char* date) {
+    // Assuming the date string has a length of 10
+    if (strlen(date) == 10 && date[4] == '-' && date[7] == '-') 
+    {
+        int number = 0;
+        for (int i = 0; i < 10; i++) {
+            if (i != 4 && i != 7) {
+                number = number * 10 + (date[i] - '0');
+            }
+        }
+        return number;
+    } 
+    else 
+    {
+        return -1;
+    }
+}
+
+void store_Rejected_Products(int i)
+{
+    strcpy(rejected_Products[rejected][0], orders[i][0]);
+    strcpy(rejected_Products[rejected][1], orders[i][3]);
+    strcpy(rejected_Products[rejected][2], orders[i][1]);
+    strcpy(rejected_Products[rejected][3], orders[i][2]);
+    rejected++;
+}
+
 void FCFS(int orderno)
 {
     int quantity;
@@ -136,6 +166,19 @@ void FCFS(int orderno)
     for(i = 0; i < orderno; i++)
     {
         sscanf(orders[i][2], "%d", &quantity);
+        char using_Currdate[11], using_Duedate[11];
+        strcpy(using_Currdate, currentdate);
+        strcpy(using_Duedate, orders[i][1]);
+        int number_using_Currdate = convertDateToNumber(using_Currdate);
+        int number_using_Duedate = convertDateToNumber(using_Duedate);
+        int remaining_Days = number_using_Duedate -  number_using_Currdate;
+
+        if (quantity > remaining_Days * 1200)
+        {
+            store_Rejected_Products(i);
+            break;
+        }
+        
         while(quantity != 0)
         {
             if(quantity!=0 && quantity <= 700 && quantity > 500)
@@ -347,6 +390,20 @@ int main(){
             printf("    ");
             for (int k = 0; k < 11; k++) {
                 printf("%c", Plant_Z[i][j][k]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+    printf("rejected_Products\n");
+    for (int i = 0; i < 2; i++) 
+    {
+        for (int j = 0; j < 4; j++) 
+        {
+            printf("    ");
+            for (int k = 0; k < 11; k++) 
+            {
+                printf("%c", rejected_Products[i][j][k]);
             }
             printf("\n");
         }
