@@ -79,6 +79,198 @@ char* get_next_day(char* current_date) {
     return next_day;
 }
 
+void updateX(int value, int i, char* currdate ){
+    strcpy(Plant_X[X_pointer][0], currdate); // setting current date as the date
+    strcpy(Plant_X[X_pointer][1], orders[i][3]);
+    strcpy(Plant_X[X_pointer][2], orders[i][0]);
+    strcpy(Plant_X[X_pointer][4], orders[i][1]);
+    if(value >= X_CAPACITY){
+    strcpy(Plant_X[X_pointer][3], "300\0");
+    }
+    else{
+        char v[4];
+        sprintf(v,"%ld", value);
+        strcpy(Plant_X[X_pointer][3], v);
+    }
+    X_pointer++;
+}
+void updateY(int value, int i, char* currdate ){
+    strcpy(Plant_Y[Y_pointer][0], currdate); // setting current date as the date
+    strcpy(Plant_Y[Y_pointer][1], orders[i][3]);
+    strcpy(Plant_Y[Y_pointer][2], orders[i][0]);
+    strcpy(Plant_Y[Y_pointer][4], orders[i][1]);
+    if(value >= Y_CAPACITY){
+    strcpy(Plant_Y[Y_pointer][3], "400\0");
+    }
+    else{
+        char v[4];
+        sprintf(v,"%ld", value);
+        strcpy(Plant_Y[Y_pointer][3], v);
+    }
+    Y_pointer++;
+}
+
+void updateZ(int value, int i, char* currdate ){
+    strcpy(Plant_Z[Z_pointer][0], currdate); // setting current date as the date
+    strcpy(Plant_Z[Z_pointer][1], orders[i][3]);
+    strcpy(Plant_Z[Z_pointer][2], orders[i][0]);
+    strcpy(Plant_Z[Z_pointer][4], orders[i][1]);
+    if(value >= Z_CAPACITY){
+    strcpy(Plant_Z[Z_pointer][3], "500\0");
+    }
+    else{
+        char v[4];
+        sprintf(v,"%ld", value);
+        strcpy(Plant_Z[Z_pointer][3], v);
+    }
+    Z_pointer++;
+}
+
+void FCFS(int orderno)
+{
+    int quantity;
+    char* currentdate = startdate;
+    int plant_produced_fcfs[3] = {0,0,0};
+    int days_used_fcfs[3] = {0,0,0};
+    int i = 0;
+    for(i = 0; i < orderno; i++)
+    {
+        sscanf(orders[i][2], "%d", &quantity);
+        while(quantity != 0)
+        {
+            if(quantity!=0 && quantity <= 700 && quantity > 500)
+            {
+                updateY(quantity,i, currentdate);
+                quantity  -= 400;
+                plant_produced_fcfs[1] += 1;
+                days_used_fcfs[1] += 1;
+                updateX(quantity,i, currentdate);
+                //quantity -= X_CAPACITY;
+                plant_produced_fcfs[0] += 1;
+                days_used_fcfs[0] += 1;
+                quantity = 0;
+
+            }
+            if(quantity!=0 && quantity > 400){
+            
+                updateZ(quantity,i, currentdate);
+                //quantity -= Z_CAPACITY;
+                plant_produced_fcfs[2] += 1;
+                days_used_fcfs[2] += 1;
+                if(quantity >= Z_CAPACITY)
+                {
+                    quantity -= Z_CAPACITY;
+                }
+                else
+                {
+                    quantity = 0;
+                }
+
+            }
+            if(quantity!=0 && quantity <= 400 && quantity > 300 || quantity >400)
+            {
+                updateY(quantity,i, currentdate);
+                //quantity  -= Y_CAPACITY;
+                plant_produced_fcfs[1] += 1;
+                days_used_fcfs[1] += 1;
+                if(quantity >= Y_CAPACITY)
+                {
+                    quantity -= Y_CAPACITY;
+                }
+                else
+                {
+                    quantity = 0;
+                }
+
+
+
+            }
+            if(quantity!=0 && quantity<= 300 || quantity > 300)
+            {
+                updateX(quantity,i, currentdate);
+                //quantity -= X_CAPACITY;
+                plant_produced_fcfs[0] += 1;
+                days_used_fcfs[0] += 1;
+                if(quantity >= X_CAPACITY)
+                {
+                    quantity -= X_CAPACITY;
+                }
+                else
+                {
+                    quantity = 0;
+                }
+
+
+            }
+            currentdate = get_next_day(currentdate);
+        }
+    }
+}
+
+
+void RR(int orderno){ //round-robin giving 1 day to each product
+    char* currdate = startdate;
+    int round = 0; //round number
+    int done; // number of orders completed
+    while(1){ //loop until done
+    done = 0; //checks how many orders completed each round
+    int j; //round robin behaviour
+
+    int plant_produced[3] = {0,0,0};
+    int days_used[3] = {0,0,0};
+
+    for(j = 0; j < orderno; j++){
+        int todo = atoi(orders[j][2]) - ((X_CAPACITY + Y_CAPACITY + Z_CAPACITY) * round);
+        if(todo > 0){
+            if(todo!=0 && todo > 500 && todo <= 700){
+                updateY(todo, j, currdate);
+                todo -=400;
+                updateX(todo,j, currdate);
+                todo = 0;
+            }
+            if(todo!= 0 && todo>400){
+                updateZ(todo,j,currdate);
+                if(todo >= Z_CAPACITY){
+                    todo -= Z_CAPACITY;
+                    }
+                    else{
+                        todo = 0;
+                    }
+            }
+            if(todo!=0 && todo>300 && todo<=400 || todo>400){
+                updateY(todo,j,currdate);
+                if(todo >= Y_CAPACITY){
+                    todo -= Y_CAPACITY;
+                    }
+                else{
+                    todo = 0;
+                }
+            }
+            if(todo != 0 && todo<=300 || todo>300){
+                updateX(todo,j,currdate);
+                if(todo >= X_CAPACITY){
+                    todo -= X_CAPACITY;
+                    }
+                else{
+                    todo = 0;
+                }
+            }
+
+        currdate = get_next_day(currdate); // change curr date only when there is something being produced
+        }
+        else{
+            done++;
+        }
+    }
+    if(done == orderno){
+        break;
+    }
+    round++;
+    }
+}
+
+
+
 int main(){
     int orderno = 0; // number of orders
     strcpy(startdate, "2024-06-01");
@@ -125,7 +317,8 @@ int main(){
     // Remember, for more orders, continue with similar pattern...
     
     
-    RR(6);
+    //RR(6);
+    FCFS(6);
     for (int i = 0; i < 6; i++) {
         printf("Plant_X[%d]:\n", i);
         for (int j = 0; j < 5; j++) {
@@ -163,24 +356,24 @@ int main(){
 }
 
 
-void FCFS(char InputFile[40], char OutputFile[40]){
-    int day_count=0;
-    char startDate[MAX_ORDERS];
-    char endDate[MAX_ORDERS];
-    char dueDate[MAX_ORDERS];
-    char productRequired[MAX_ORDERS];
-    char quantity[MAX_ORDERS];
-    FILE *input_file;
-    FILE *output_file;
-    input_file=fopen(InputFile,"Read");
-    output_file = fopen(OutputFile,"Write");
+// void FCFS(char InputFile[40], char OutputFile[40]){
+//     int day_count=0;
+//     char startDate[MAX_ORDERS];
+//     char endDate[MAX_ORDERS];
+//     char dueDate[MAX_ORDERS];
+//     char productRequired[MAX_ORDERS];
+//     char quantity[MAX_ORDERS];
+//     FILE *input_file;
+//     FILE *output_file;
+//     input_file=fopen(InputFile,"Read");
+//     output_file = fopen(OutputFile,"Write");
 
-    if (input_file==NULL) { 
-        printf("File not available\n"); 
-        exit(0);     
-    }
+//     if (input_file==NULL) { 
+//         printf("File not available\n"); 
+//         exit(0);     
+//     }
 
-}
+// }
 
 
     // int calculate_no_days(int *plant_produced, int *days_used, char orders[100][4][11], char Plant_X[30][4][11], char Plant_Y[30][4][11], char Plant_Z[30][4][11], int i )
@@ -271,52 +464,6 @@ void FCFS(char InputFile[40], char OutputFile[40]){
 //     }
 // }
 
-void updateX(int value, int i, char* currdate ){
-    strcpy(Plant_X[X_pointer][0], currdate); // setting current date as the date
-    strcpy(Plant_X[X_pointer][1], orders[i][3]);
-    strcpy(Plant_X[X_pointer][2], orders[i][0]);
-    strcpy(Plant_X[X_pointer][4], orders[i][1]);
-    if(value >= X_CAPACITY){
-    strcpy(Plant_X[X_pointer][3], "300\0");
-    }
-    else{
-        char v[4];
-        sprintf(v,"%ld", value);
-        strcpy(Plant_X[X_pointer][3], v);
-    }
-    X_pointer++;
-}
-void updateY(int value, int i, char* currdate ){
-    strcpy(Plant_Y[Y_pointer][0], currdate); // setting current date as the date
-    strcpy(Plant_Y[Y_pointer][1], orders[i][3]);
-    strcpy(Plant_Y[Y_pointer][2], orders[i][0]);
-    strcpy(Plant_Y[Y_pointer][4], orders[i][1]);
-    if(value >= Y_CAPACITY){
-    strcpy(Plant_Y[Y_pointer][3], "400\0");
-    }
-    else{
-        char v[4];
-        sprintf(v,"%ld", value);
-        strcpy(Plant_Y[Y_pointer][3], v);
-    }
-    Y_pointer++;
-}
-
-void updateZ(int value, int i, char* currdate ){
-    strcpy(Plant_Z[Z_pointer][0], currdate); // setting current date as the date
-    strcpy(Plant_Z[Z_pointer][1], orders[i][3]);
-    strcpy(Plant_Z[Z_pointer][2], orders[i][0]);
-    strcpy(Plant_Z[Z_pointer][4], orders[i][1]);
-    if(value >= Z_CAPACITY){
-    strcpy(Plant_Z[Z_pointer][3], "500\0");
-    }
-    else{
-        char v[4];
-        sprintf(v,"%ld", value);
-        strcpy(Plant_Z[Z_pointer][3], v);
-    }
-    Z_pointer++;
-}
 
 // void RR(int orderno){ //round-robin giving 1 day to each product
 //     char* currdate = startdate;
@@ -381,63 +528,3 @@ void updateZ(int value, int i, char* currdate ){
 // }
 
 
-void RR(int orderno){ //round-robin giving 1 day to each product
-    char* currdate = startdate;
-    int round = 0; //round number
-    int done; // number of orders completed
-    while(1){ //loop until done
-    done = 0; //checks how many orders completed each round
-    int j; //round robin behaviour
-
-    int plant_produced[3] = {0,0,0};
-    int days_used[3] = {0,0,0};
-
-    for(j = 0; j < orderno; j++){
-        int todo = atoi(orders[j][2]) - ((X_CAPACITY + Y_CAPACITY + Z_CAPACITY) * round);
-        if(todo > 0){
-            if(todo!=0 && todo > 500 && todo <= 700){
-                updateY(todo, j, currdate);
-                todo -=400;
-                updateX(todo,j, currdate);
-                todo = 0;
-            }
-            if(todo!= 0 && todo>400){
-                updateZ(todo,j,currdate);
-                if(todo >= Z_CAPACITY){
-                    todo -= Z_CAPACITY;
-                    }
-                    else{
-                        todo = 0;
-                    }
-            }
-            if(todo!=0 && todo>300 && todo<=400 || todo>400){
-                updateY(todo,j,currdate);
-                if(todo >= Y_CAPACITY){
-                    todo -= Y_CAPACITY;
-                    }
-                else{
-                    todo = 0;
-                }
-            }
-            if(todo != 0 && todo<=300 || todo>300){
-                updateX(todo,j,currdate);
-                if(todo >= X_CAPACITY){
-                    todo -= X_CAPACITY;
-                    }
-                else{
-                    todo = 0;
-                }
-            }
-
-        currdate = get_next_day(currdate); // change curr date only when there is something being produced
-        }
-        else{
-            done++;
-        }
-    }
-    if(done == orderno){
-        break;
-    }
-    round++;
-    }
-}
