@@ -210,7 +210,6 @@ void FCFS(int orderno)
                 plant_produced_fcfs[1] += 1;
                 days_used_fcfs[1] += 1;
                 updateX(quantity,i, currentdate);
-                //quantity -= X_CAPACITY;
                 plant_produced_fcfs[0] += 1;
                 days_used_fcfs[0] += 1;
                 quantity = 0;
@@ -219,7 +218,6 @@ void FCFS(int orderno)
             if(quantity!=0 && quantity > 400){
             
                 updateZ(quantity,i, currentdate);
-                //quantity -= Z_CAPACITY;
                 plant_produced_fcfs[2] += 1;
                 days_used_fcfs[2] += 1;
                 if(quantity >= Z_CAPACITY)
@@ -235,7 +233,6 @@ void FCFS(int orderno)
             if(quantity!=0 && quantity <= 400 && quantity > 300 || quantity >400)
             {
                 updateY(quantity,i, currentdate);
-                //quantity  -= Y_CAPACITY;
                 plant_produced_fcfs[1] += 1;
                 days_used_fcfs[1] += 1;
                 if(quantity >= Y_CAPACITY)
@@ -253,7 +250,6 @@ void FCFS(int orderno)
             if(quantity!=0 && quantity<= 300 || quantity > 300)
             {
                 updateX(quantity,i, currentdate);
-                //quantity -= X_CAPACITY;
                 plant_produced_fcfs[0] += 1;
                 days_used_fcfs[0] += 1;
                 if(quantity >= X_CAPACITY)
