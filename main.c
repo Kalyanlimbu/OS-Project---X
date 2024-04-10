@@ -10,6 +10,7 @@
 #define ARGV_SIZE 100
 #define MAX_ORDERS 50 // placeholder number for max number of orders
 #define MAX_PLANTS 30
+#define PLANT_ATTRIBUTES 5
 
 char argv[ARGV_SIZE][100];
 // char startDate[MAX_ORDERS];
@@ -355,6 +356,32 @@ void RR(int orderno){ //round-robin giving 1 day to each product
     }
 }
 
+void printPlantDetails(char* plantName, char* startDate, char* endDate, char Plant[30][5][11], int len){
+    // Formatting for the Plant
+    printf(" __________________________________________________________________________\n");
+    printf("|  %s (300 per day)                                                   |\n", plantName);
+    printf("|  %s to %s                                                |\n", startdate, enddate);
+
+    printf("|__________________________________________________________________________|\n");
+    printf("|     Date     | Product Name |  Order Name  |   Quantity   |   Due Date   |\n");
+    printf("|              |              |              |  (Produced)  |              |\n");
+    printf("|______________|______________|______________|______________|______________|\n");
+
+    // Printing Plant
+    for (int i = 0; i < len; i++) {
+        for (int j = 0; j < PLANT_ATTRIBUTES; j++) {
+            printf("| ");
+            for (int k = 0; k < 11; k++) {
+                printf("%c", Plant[i][j][k] ? Plant[i][j][k] : ' ');
+            }
+            if(j == PLANT_ATTRIBUTES - 1) printf("  |");
+            else printf("  ");
+        }
+        printf("\n");
+        printf("|______________|______________|______________|______________|______________|\n");
+    }
+    printf("\n\n");
+}
 
 
 int main(){
@@ -405,39 +432,11 @@ int main(){
     
     //RR(6);
     SJF(6);
-    for (int i = 0; i < 6; i++) {
-        printf("Plant_X[%d]:\n", i);
-        for (int j = 0; j < 5; j++) {
-            printf("    ");
-            for (int k = 0; k < 11; k++) {
-                printf("%c", Plant_X[i][j][k]);
-            }
-            printf("\n");
-        }
-        printf("\n");
-    }
-    for (int i = 0; i < 6; i++) {
-        printf("Plant_Y[%d]:\n", i);
-        for (int j = 0; j < 5; j++) {
-            printf("    ");
-            for (int k = 0; k < 11; k++) {
-                printf("%c", Plant_Y[i][j][k]);
-            }
-            printf("\n");
-        }
-        printf("\n");
-    }
-    for (int i = 0; i < 6; i++) {
-        printf("Plant_Z[%d]:\n", i);
-        for (int j = 0; j < 5; j++) {
-            printf("    ");
-            for (int k = 0; k < 11; k++) {
-                printf("%c", Plant_Z[i][j][k]);
-            }
-            printf("\n");
-        }
-        printf("\n");
-    }
+    
+    printPlantDetails("Plant_X", startdate, enddate, Plant_X, 6);
+    printPlantDetails("Plant_Y", startdate, enddate, Plant_Y, 6);
+    printPlantDetails("Plant_Z", startdate, enddate, Plant_Z, 6);
+
     printf("rejected_Products\n");
     for (int i = 0; i < 2; i++) 
     {
