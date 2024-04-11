@@ -408,7 +408,55 @@ void printPlantDetails(char* plantName, char Plant[30][5][11], int len){
     }
     printf("\n\n");
 }
+void addORDER(char *input){
+    if(orderno2 >= MAX_ORDERS){
+        printf("Maximum number of orders reached\n");
+        return;
+    }
+    //Command to order details
+    char *token = strtok(input, " ");
+    token = strtok(NULL, " "); 
 
+    int field=0;
+    while(token!=NULL && field<5){
+        strcpy(orders[orderno2][field], token);
+        token = strtok(NULL, " ");
+        field++;
+        
+    }
+
+    if(field!=5){
+        printf("Incorrect format of data!\n");
+        orderno2++;
+        return;
+
+    }
+    
+    printf("Added Order %s %s %s %s %s\n",orders[orderno2-1][0],orders[orderno2-1][1],orders[orderno2-1][2],orders[orderno2-1][3],orders[orderno2-1][4]);
+    orderno2++;
+
+}
+void addBATCH(char *input){
+    char *token = strtok(input, " ");
+    token = strtok(NULL, " "); // Skip the command
+    if (token != NULL) {
+        printf("Reading batch data from file: %s\n", token);
+        FILE *input_file = fopen(token, "r");
+        if (input_file == NULL) {
+            printf("Error opening input file\n");
+            return;
+        }
+        char line[ARGV_SIZE];
+        while (fgets(line, ARGV_SIZE, input_file) != NULL) {
+            line[strcspn(line, "\n")] = '\0';   
+            addORDER(line);
+        }
+        fclose(input_file);
+
+    } else {
+        printf("Invalid command format for addBATCH\n");
+    }
+}
 
 int main2(){
     int orderno = 0; // number of orders
@@ -550,12 +598,16 @@ int main(){
             // Read the batch file
             char *token = strtok(input, " ");
             token = strtok(NULL, " "); // Skip the command
-            if (token != NULL) {
-                printf("Reading batch data from file: %s\n", token);
-                // Implement file reading logic here
-            } else {
-                fprintf(stderr, "Invalid command format for addBATCH\n");
+
+            char filepath[100];
+            if(token != NULL) {
+                strcpy(filepath, token);
+                token = strtok(NULL, " ");
             }
+
+                printf("Reading batch data from file: %s\n", token);
+                addBATCH(filepath);
+                // Implement file reading logic here
         } else if (substring(input, command4)) {
             // Running the algorithm
             char scheduler[5][20];
