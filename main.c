@@ -198,6 +198,32 @@ void print_Rejected_Products(){
     return;
 }
 
+void printPlantDetails(char* plantName, char Plant[30][5][11], int len){
+    // Formatting for the Plant
+    printf(" __________________________________________________________________________\n");
+    printf("|  %s (300 per day)                                                   |\n", plantName);
+    printf("|  %s to %s                                                |\n", startdate, enddate);
+    printf("|__________________________________________________________________________|\n");
+    printf("|     Date     | Product Name |  Order Name  |   Quantity   |   Due Date   |\n");
+    printf("|              |              |              |  (Produced)  |              |\n");
+    printf("|______________|______________|______________|______________|______________|\n");
+
+    // Printing Plant
+    for (int i = 0; i < len; i++) {
+        for (int j = 0; j < PLANT_ATTRIBUTES; j++) {
+            printf("| ");
+            for (int k = 0; k < 11; k++) {
+                printf("%c", Plant[i][j][k] ? Plant[i][j][k] : ' ');
+            }
+            if(j == PLANT_ATTRIBUTES - 1) printf("  |");
+            else printf("  ");
+        }
+        printf("\n");
+        printf("|______________|______________|______________|______________|______________|\n");
+    }
+    printf("\n\n");
+}
+
 void FCFS(int orderno)
 {
     int quantity;
@@ -381,32 +407,6 @@ void RR(int orderno){ //round-robin giving 1 day to each product
     }
     round++;
     }
-}
-
-void printPlantDetails(char* plantName, char Plant[30][5][11], int len){
-    // Formatting for the Plant
-    printf(" __________________________________________________________________________\n");
-    printf("|  %s (300 per day)                                                   |\n", plantName);
-    printf("|  %s to %s                                                |\n", startdate, enddate);
-    printf("|__________________________________________________________________________|\n");
-    printf("|     Date     | Product Name |  Order Name  |   Quantity   |   Due Date   |\n");
-    printf("|              |              |              |  (Produced)  |              |\n");
-    printf("|______________|______________|______________|______________|______________|\n");
-
-    // Printing Plant
-    for (int i = 0; i < len; i++) {
-        for (int j = 0; j < PLANT_ATTRIBUTES; j++) {
-            printf("| ");
-            for (int k = 0; k < 11; k++) {
-                printf("%c", Plant[i][j][k] ? Plant[i][j][k] : ' ');
-            }
-            if(j == PLANT_ATTRIBUTES - 1) printf("  |");
-            else printf("  ");
-        }
-        printf("\n");
-        printf("|______________|______________|______________|______________|______________|\n");
-    }
-    printf("\n\n");
 }
 
 
