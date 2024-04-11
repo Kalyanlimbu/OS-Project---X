@@ -25,6 +25,7 @@ char Plant_Y[30][5][11];
 char Plant_Z[30][5][11];
 char rejected_Products[50][4][11];// Array to keep track of recjected product and right now we have only  
 //assumed max 50 products can be rejected but could increase if desired
+int orderno2 = 0;
 
 int rejected = 0; // To keep track of rejected products
 int X_pointer = 0;
@@ -179,6 +180,24 @@ void store_Rejected_Products(int i)
     rejected++;
 }
 
+void print_Rejected_Products(){
+    printf("rejected_Products\n");
+    for (int i = 0; i < 2; i++) 
+    {
+        for (int j = 0; j < 4; j++) 
+        {
+            printf("    ");
+            for (int k = 0; k < 11; k++) 
+            {
+                printf("%c", rejected_Products[i][j][k]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+    return;
+}
+
 void FCFS(int orderno)
 {
     int quantity;
@@ -194,11 +213,14 @@ void FCFS(int orderno)
         strcpy(using_Duedate, orders[i][1]);
         int number_using_Currdate = convertDateToNumber(using_Currdate);
         int number_using_Duedate = convertDateToNumber(using_Duedate);
+
         int remaining_Days = number_using_Duedate -  number_using_Currdate;
 
+        printf("Remaining days: %d\n", remaining_Days);
         if (quantity > remaining_Days * 1200)
         {
             store_Rejected_Products(i);
+            printf("Rejected a product\n");
             continue;
             }
         
@@ -267,6 +289,11 @@ void FCFS(int orderno)
             currentdate = get_next_day(currentdate);
         }
     }
+
+    printPlantDetails("Plant_X",  Plant_X, orderno);
+    printPlantDetails("Plant_Y",  Plant_Y, orderno);
+    printPlantDetails("Plant_Z", Plant_Z, orderno);
+    print_Rejected_Products();
 }
 void copyOrdersArray(const char source[100][4][11], char destination[100][4][11], int orderno) {
     for (int i = 0; i < orderno; ++i) {
@@ -356,12 +383,11 @@ void RR(int orderno){ //round-robin giving 1 day to each product
     }
 }
 
-void printPlantDetails(char* plantName, char* startDate, char* endDate, char Plant[30][5][11], int len){
+void printPlantDetails(char* plantName, char Plant[30][5][11], int len){
     // Formatting for the Plant
     printf(" __________________________________________________________________________\n");
     printf("|  %s (300 per day)                                                   |\n", plantName);
     printf("|  %s to %s                                                |\n", startdate, enddate);
-
     printf("|__________________________________________________________________________|\n");
     printf("|     Date     | Product Name |  Order Name  |   Quantity   |   Due Date   |\n");
     printf("|              |              |              |  (Produced)  |              |\n");
@@ -384,7 +410,7 @@ void printPlantDetails(char* plantName, char* startDate, char* endDate, char Pla
 }
 
 
-int main(){
+int main2(){
     int orderno = 0; // number of orders
     strcpy(startdate, "2024-06-01");
     strcpy(enddate, "2024-06-10");
@@ -433,27 +459,146 @@ int main(){
     //RR(6);
     SJF(6);
     
-    printPlantDetails("Plant_X", startdate, enddate, Plant_X, 6);
-    printPlantDetails("Plant_Y", startdate, enddate, Plant_Y, 6);
-    printPlantDetails("Plant_Z", startdate, enddate, Plant_Z, 6);
+    printPlantDetails("Plant_X",  Plant_X, 6);
+    printPlantDetails("Plant_Y", Plant_Y, 6);
+    printPlantDetails("Plant_Z", Plant_Z, 6);
 
-    printf("rejected_Products\n");
-    for (int i = 0; i < 2; i++) 
-    {
-        for (int j = 0; j < 4; j++) 
-        {
-            printf("    ");
-            for (int k = 0; k < 11; k++) 
-            {
-                printf("%c", rejected_Products[i][j][k]);
-            }
-            printf("\n");
-        }
-        printf("\n");
-    }
+    
     return 0;
 }
 
+int substring(const char *str, const char *substr) {
+    int startsWith = 0;
+    int i = 0;
+    for (i = 0; substr[i] != '\0'; i++) {
+        if (str[i] != substr[i]) {
+            startsWith = 0;
+            break;
+        }
+        startsWith = 1;
+    }
+    return startsWith;
+}
+
+
+int main(){
+
+    printf("\t\t\t\t\t\tWELCOME TO PLS!\n");
+    char command1[] = "addPEIOD";
+    char command2[] = "addORDER";
+    char command3[] = "addBATCH";
+    char command4[] = "runPLS";
+    char command5[] = "printREPORT";
+    char command6[] = "exitPLS";
+
+    while (1) {
+        printf("\nPlease Enter:\n> ");
+        char input[150];
+        if (fgets(input, sizeof(input), stdin) == NULL) {
+            fprintf(stderr, "Error reading input\n");
+            continue;
+        }
+
+        // Remove the newline character from the input
+        input[strcspn(input, "\n")] = '\0';
+
+        // Check the input command
+        if (substring(input, command1)) {
+            // Update the period
+            char *token = strtok(input, " ");
+            token = strtok(NULL, " "); // Skip the command
+            if (token != NULL) {
+                strcpy(startdate, token);
+                token = strtok(NULL, " ");
+                if (token != NULL) {
+                    strcpy(enddate, token);
+                    printf("The StartDate is: %s\n", startdate);
+                    printf("The EndDate is: %s\n", enddate);
+                } else {
+                    fprintf(stderr, "Invalid command format for addPERIOD\n");
+                }
+            } else {
+                fprintf(stderr, "Invalid command format for addPERIOD\n");
+            }
+        } else if (substring(input, command2)) {
+            // Update orders
+            if (orderno2 >= MAX_ORDERS) {
+                fprintf(stderr, "Maximum number of orders reached\n");
+                continue;
+            }
+
+            char *token = strtok(input, " ");
+            token = strtok(NULL, " "); // Skip the command
+            int field = 0;
+            while (token != NULL && field < 4) {
+                strcpy(orders[orderno2][field], token);
+                token = strtok(NULL, " ");
+                field++;
+            }
+
+            if (field != 4) {
+                fprintf(stderr, "Invalid command format for addORDER\n");
+                continue;
+            }
+            printf ("The orders[%d][0]: %s\n", orderno2, orders[orderno2][0]);
+            printf ("The orders[%d][1]: %s\n", orderno2, orders[orderno2][1]);
+            printf ("The orders[%d][2]: %s\n", orderno2, orders[orderno2][2]);
+            printf ("The orders[%d][3]: %s\n", orderno2, orders[orderno2][3]);
+
+            orderno2++;
+        } else if (substring(input, command3)) {
+            // Read the batch file
+            char *token = strtok(input, " ");
+            token = strtok(NULL, " "); // Skip the command
+            if (token != NULL) {
+                printf("Reading batch data from file: %s\n", token);
+                // Implement file reading logic here
+            } else {
+                fprintf(stderr, "Invalid command format for addBATCH\n");
+            }
+        } else if (substring(input, command4)) {
+            // Running the algorithm
+            char scheduler[5][20];
+            char *token = strtok(input, " ");
+            token = strtok(NULL, " ");
+            int field = 0;
+            while (token != NULL && field < 5) {
+                strcpy(scheduler[field], token);
+                token = strtok(NULL, " ");
+                field++;
+            } // Skip the command
+                printf("Running the production planning algorithm: %s.\n", scheduler[0]);
+                printf("ORDERNO2 = %d\n", orderno2);
+                if(strcmp(scheduler[0], "FCFS")==0){
+                    FCFS(orderno2);
+                }
+                else if(strcmp(scheduler[0],"SJF")==0){
+                    SJF(orderno2);
+                }
+
+                // Implement the algorithm logic here
+
+        } else if (substring(input, command5)) {
+            // Print report
+            char *token = strtok(input, ">");
+            token = strtok(NULL, ">"); // Skip the command
+            if (token != NULL) {
+                printf("Printing report to file: %s\n", token);
+                // Implement report printing logic here
+            } else {
+                fprintf(stderr, "Invalid command format for printREPORT\n");
+            }
+        } else if (substring(input, command6)) {
+            // Exit
+            printf("\n\t\t\t\tPLS SYSTEM TERMINATED\n");
+            break;
+        } else {
+            fprintf(stderr, "Invalid command\n");
+        }
+    }
+
+    return 0;
+}
 
 // void FCFS(char InputFile[40], char OutputFile[40]){
 //     int day_count=0;
