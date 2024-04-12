@@ -198,11 +198,12 @@ void print_Rejected_Products(){
     return;
 }
 
-void printPlantDetails(char* plantName, char Plant[30][5][11], int len){
+void printPlantDetails(char* plantName, char* startDate, char* endDate, char Plant[30][5][11], int len){
     // Formatting for the Plant
     printf(" __________________________________________________________________________\n");
     printf("|  %s (300 per day)                                                   |\n", plantName);
     printf("|  %s to %s                                                |\n", startdate, enddate);
+
     printf("|__________________________________________________________________________|\n");
     printf("|     Date     | Product Name |  Order Name  |   Quantity   |   Due Date   |\n");
     printf("|              |              |              |  (Produced)  |              |\n");
@@ -214,6 +215,7 @@ void printPlantDetails(char* plantName, char Plant[30][5][11], int len){
             printf("| ");
             for (int k = 0; k < 11; k++) {
                 printf("%c", Plant[i][j][k] ? Plant[i][j][k] : ' ');
+                // Need to implement NA checker
             }
             if(j == PLANT_ATTRIBUTES - 1) printf("  |");
             else printf("  ");
@@ -222,6 +224,92 @@ void printPlantDetails(char* plantName, char Plant[30][5][11], int len){
         printf("|______________|______________|______________|______________|______________|\n");
     }
     printf("\n\n");
+}
+
+void performanceCalculation(char* plantName, char Plant[30][5][11], int pointerLen, char orders[100][4][11], int orderNo, int produceRate, float *utilPercentage, int *utilCounter){
+    int totalDays = 0, totalQuantity = 0;
+    for(int i = 0; i < orderNo; i++){
+        for(int j = 0; j < pointerLen; j++){
+            if(strcmp(orders[i][0], Plant[j][2]) == 0) {
+                int diff = convertDateToNumber(Plant[j][4]) - convertDateToNumber(Plant[j][0]);
+                totalDays += diff;
+                totalQuantity += atoi(Plant[j][3]);
+            }
+        }
+    }
+    
+    float tmp = totalQuantity / produceRate * totalDays;
+    *utilPercentage += tmp;
+    (*utilCounter)++;
+
+    printf("%s:\n", plantName);
+    printf("        Number of days in use:                    %d days\n", totalDays);
+    printf("        Number of products produced:              %d (in total)\n", totalQuantity);
+    printf("        Utilization of the plant:                 %.1f %c\n\n", tmp, '%');
+}
+
+void printAnalysisReport(char* command, char orders[100][4][11], int orderNo, char rejectedProducts[50][4][11], int rejectedNo) {
+    printf("***PLS Schedule Analysis Report***\n\n");
+    printf("Algorithm used: %s\n\n", command);
+    printf("There are %d Orders ACCEPTED. Details are as follows:\n\n", X_pointer + Y_pointer + Z_pointer);
+
+    printf("ORDER NUMBER  START         END            DAYS      QUANTITY     PLANT\n");
+    printf("==========================================================================\n");
+
+    for(int i = 0; i < orderNo; i++) {
+        for(int j = 0; j < X_pointer; j++) {
+            if(strcmp(orders[i][0], Plant_X[j][2]) == 0) {
+                int diff = convertDateToNumber(Plant_X[j][4]) - convertDateToNumber(Plant_X[j][0]);
+                printf("%s          %s    %s        %d        %s ", Plant_X[j][2], Plant_X[j][0], Plant_X[j][4], diff, Plant_X[j][3]);
+                printf("       Plant_X\n");
+            }
+        }
+        for(int j = 0; j < Y_pointer; j++) {
+            if(strcmp(orders[i][0], Plant_Y[j][2]) == 0) {
+                int diff = convertDateToNumber(Plant_Y[j][4]) - convertDateToNumber(Plant_Y[j][0]);
+                printf("%s          %s    %s        %d        %s ", Plant_Y[j][2], Plant_Y[j][0], Plant_Y[j][4], diff, Plant_Y[j][3]);
+                printf("       Plant_Y\n");
+            }
+        }
+        for(int j = 0; j < Z_pointer; j++) {
+            if(strcmp(orders[i][0], Plant_Z[j][2]) == 0) {
+                int diff = convertDateToNumber(Plant_Z[j][4]) - convertDateToNumber(Plant_Z[j][0]);
+                printf("%s          %s    %s        %d        %s ", Plant_Z[j][2], Plant_Z[j][0], Plant_Z[j][4], diff, Plant_Z[j][3]);
+                printf("       Plant_Z\n");
+            }
+        }
+    }
+    printf("\n");
+    printf("                                   - End -                               \n");
+    printf("==========================================================================\n");
+    printf("\n\n");
+
+    printf("There are %d Orders REJECTED. Details are as follows:\n\n", rejectedNo);
+    printf("ORDER NUMBER      PRODUCT NAME      DUE DATE      QUANTITY\n");
+    printf("==========================================================================\n");
+    
+    for(int i = 0; i < orderNo; i++){
+        for(int j = 0; j < rejectedNo; j++){
+            if(strcmp(orders[i][0], rejectedProducts[j][0]) == 0){
+                printf("%s              %s             ", rejectedProducts[j][0], rejectedProducts[j][1]);
+                printf("%s      %s\n", rejectedProducts[j][2], rejectedProducts[j][3]);
+            }
+        }
+    }
+    printf("\n");
+    printf("                                   - End -                               \n");
+    printf("==========================================================================\n");
+    printf("\n\n");
+
+    printf("***PERFORMANCE\n\n");
+    
+    float utilPercentage = 0.0;
+    int utilCounter = 0;
+    performanceCalculation("Plant_X", Plant_X, X_pointer, orders, orderNo, 300, &utilPercentage, &utilCounter);
+    performanceCalculation("Plant_Y", Plant_Y, Y_pointer, orders, orderNo, 300, &utilPercentage, &utilCounter);
+    performanceCalculation("Plant_Z", Plant_Z, Z_pointer, orders, orderNo, 300, &utilPercentage, &utilCounter);
+
+    printf("Overall of utilization:                           %.1f %c\n\n", (utilPercentage / utilCounter), '%');
 }
 
 void FCFS(int orderno)
@@ -316,11 +404,14 @@ void FCFS(int orderno)
         }
     }
 
-    printPlantDetails("Plant_X",  Plant_X, orderno);
-    printPlantDetails("Plant_Y",  Plant_Y, orderno);
-    printPlantDetails("Plant_Z", Plant_Z, orderno);
-    print_Rejected_Products();
+    printPlantDetails("Plant_X", startdate, enddate, Plant_X, 6);
+    printPlantDetails("Plant_Y", startdate, enddate, Plant_Y, 6);
+    printPlantDetails("Plant_Z", startdate, enddate, Plant_Z, 6);
+
+    printAnalysisReport("RR", orders, 6, rejected_Products, 2);
 }
+
+
 void copyOrdersArray(const char source[100][4][11], char destination[100][4][11], int orderno) {
     for (int i = 0; i < orderno; ++i) {
         for (int j = 0; j < 4; ++j) {
@@ -459,10 +550,11 @@ int main2(){
     //RR(6);
     SJF(6);
     
-    printPlantDetails("Plant_X",  Plant_X, 6);
-    printPlantDetails("Plant_Y", Plant_Y, 6);
-    printPlantDetails("Plant_Z", Plant_Z, 6);
+    pprintPlantDetails("Plant_X", startdate, enddate, Plant_X, 6);
+    printPlantDetails("Plant_Y", startdate, enddate, Plant_Y, 6);
+    printPlantDetails("Plant_Z", startdate, enddate, Plant_Z, 6);
 
+    printAnalysisReport("RR", orders, 6, rejected_Products, 2);
     
     return 0;
 }
