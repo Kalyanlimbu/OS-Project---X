@@ -481,6 +481,50 @@ int substring(const char *str, const char *substr) {
 }
 
 
+void processBatchFile(char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "Error opening file: %s\n", filename);
+        return;
+    }
+
+    char line[150];
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        // Remove the newline character from the line
+        line[strcspn(line, "\n")] = '\0';
+
+        // Check if the line starts with "addORDER"
+        if (strncmp(line, "addORDER", 8) == 0) {
+            // Process the order
+            char *token = strtok(line, " ");
+            token = strtok(NULL, " "); // Skip the "addORDER" command
+
+            int field = 0;
+            while (token != NULL && field < 4) {
+                strcpy(orders[orderno2][field], token);
+                token = strtok(NULL, " ");
+                field++;
+            }
+
+            if (field != 4) {
+                fprintf(stderr, "Invalid order format in batch file\n");
+                continue;
+            }
+
+            printf("The orders[%d][0]: %s\n", orderno2, orders[orderno2][0]);
+            printf("The orders[%d][1]: %s\n", orderno2, orders[orderno2][1]);
+            printf("The orders[%d][2]: %s\n", orderno2, orders[orderno2][2]);
+            printf("The orders[%d][3]: %s\n", orderno2, orders[orderno2][3]);
+
+            orderno2++;
+        } else {
+            fprintf(stderr, "Invalid command in batch file: %s\n", line);
+        }
+    }
+
+    fclose(fp);
+}
+
 int main(){
 
     printf("\t\t\t\t\t\tWELCOME TO PLS!\n");
@@ -552,11 +596,20 @@ int main(){
             token = strtok(NULL, " "); // Skip the command
             if (token != NULL) {
                 printf("Reading batch data from file: %s\n", token);
-                // Implement file reading logic here
+                processBatchFile(token);
+
+                // Print the orders added from the batch file
+                for (int i = orderno2 - (MAX_ORDERS - orderno2); i < orderno2; i++) {
+                    printf("The orders[%d][0]: %s\n", i, orders[i][0]);
+                    printf("The orders[%d][1]: %s\n", i, orders[i][1]);
+                    printf("The orders[%d][2]: %s\n", i, orders[i][2]);
+                    printf("The orders[%d][3]: %s\n", i, orders[i][3]);
+                }
             } else {
                 fprintf(stderr, "Invalid command format for addBATCH\n");
             }
-        } else if (substring(input, command4)) {
+        }
+        else if (substring(input, command4)) {
             // Running the algorithm
             char scheduler[5][20];
             char *token = strtok(input, " ");
