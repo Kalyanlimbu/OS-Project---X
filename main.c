@@ -650,14 +650,15 @@ int substring(const char *str, const char *substr) {
 }
 
 
+
 void processBatchFile(char *filename) {
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
         fprintf(stderr, "Error opening file: %s\n", filename);
         return;
     }
-
-    char line[150];
+    
+    char line[50];
     while (fgets(line, sizeof(line), fp) != NULL) {
         // Remove the newline character from the line
         line[strcspn(line, "\n")] = '\0';
@@ -670,6 +671,10 @@ void processBatchFile(char *filename) {
 
             int field = 0;
             while (token != NULL && field < 4) {
+                if (orderno2 < 0 || orderno2 >= MAX_ORDERS) {
+                    fprintf(stderr, "Invalid order number\n");
+                    return;
+                }
                 strcpy(orders[orderno2][field], token);
                 token = strtok(NULL, " ");
                 field++;
@@ -693,6 +698,7 @@ void processBatchFile(char *filename) {
 
     fclose(fp);
 }
+
 
 int main(){
 
@@ -766,14 +772,7 @@ int main(){
             if (token != NULL) {
                 printf("Reading batch data from file: %s\n", token);
                 processBatchFile(token);
-
                 // Print the orders added from the batch file
-                for (int i = orderno2 - (MAX_ORDERS - orderno2); i < orderno2; i++) {
-                    printf("The orders[%d][0]: %s\n", i, orders[i][0]);
-                    printf("The orders[%d][1]: %s\n", i, orders[i][1]);
-                    printf("The orders[%d][2]: %s\n", i, orders[i][2]);
-                    printf("The orders[%d][3]: %s\n", i, orders[i][3]);
-                }
             } else {
                 fprintf(stderr, "Invalid command format for addBATCH\n");
             }
