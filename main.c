@@ -3,6 +3,15 @@
 #include <unistd.h>
 #include <string.h>
 
+// addPEIOD 2024-06-01 2024-06-30
+// addORDER p000 2024-06-02 1200 shoes
+// addORDER p001 2024-06-03 800 socks
+// addORDER p002 2024-06-06 1000 pants
+// addORDER p003 2024-06-06 500 shirt
+// addORDER p004 2024-06-08 400 jacket
+// addORDER p005 2024-06-07 2000 hats
+// runPLS FCFS | printREPORT > report_99_FCFS.txt
+
 
 #define X_CAPACITY 300
 #define Y_CAPACITY 400
@@ -321,86 +330,93 @@ void FCFS(int orderno)
     int i = 0;
     for(i = 0; i < orderno; i++)
     {
+        // checking if current date less than  or equal to end date
+        char using_Enddate[11];
+        strcpy(using_Enddate, enddate);
+        int number_using_Enddate = convertDateToNumber(using_Enddate);
         sscanf(orders[i][2], "%d", &quantity);
         char using_Currdate[11], using_Duedate[11];
         strcpy(using_Currdate, currentdate);
         strcpy(using_Duedate, orders[i][1]);
         int number_using_Currdate = convertDateToNumber(using_Currdate);
         int number_using_Duedate = convertDateToNumber(using_Duedate);
-
-        int remaining_Days = number_using_Duedate -  number_using_Currdate;
-
-        printf("Remaining days: %d\n", remaining_Days);
-        if (quantity > remaining_Days * 1200)
+        if(number_using_Currdate <= number_using_Enddate)
         {
-            store_Rejected_Products(i);
-            printf("Rejected a product\n");
-            continue;
-            }
-        
-        while(quantity != 0)
-        {
-            if(quantity!=0 && quantity <= 700 && quantity > 500)
+
+            int remaining_Days = number_using_Duedate -  number_using_Currdate;
+
+            printf("Remaining days: %d\n", remaining_Days);
+            if (quantity > remaining_Days * 1200)
             {
-                updateY(quantity,i, currentdate);
-                quantity  -= 400;
-                plant_produced_fcfs[1] += 1;
-                days_used_fcfs[1] += 1;
-                updateX(quantity,i, currentdate);
-                plant_produced_fcfs[0] += 1;
-                days_used_fcfs[0] += 1;
-                quantity = 0;
-
+                store_Rejected_Products(i);
+                printf("Rejected a product\n");
+                continue;
             }
-            if(quantity!=0 && quantity > 400){
             
-                updateZ(quantity,i, currentdate);
-                plant_produced_fcfs[2] += 1;
-                days_used_fcfs[2] += 1;
-                if(quantity >= Z_CAPACITY)
-                {
-                    quantity -= Z_CAPACITY;
-                }
-                else
-                {
-                    quantity = 0;
-                }
-
-            }
-            if(quantity!=0 && quantity <= 400 && quantity > 300 || quantity >400)
+            while(quantity != 0)
             {
-                updateY(quantity,i, currentdate);
-                plant_produced_fcfs[1] += 1;
-                days_used_fcfs[1] += 1;
-                if(quantity >= Y_CAPACITY)
+                if(quantity!=0 && quantity <= 700 && quantity > 500)
                 {
-                    quantity -= Y_CAPACITY;
-                }
-                else
-                {
+                    updateY(quantity,i, currentdate);
+                    quantity  -= 400;
+                    plant_produced_fcfs[1] += 1;
+                    days_used_fcfs[1] += 1;
+                    updateX(quantity,i, currentdate);
+                    plant_produced_fcfs[0] += 1;
+                    days_used_fcfs[0] += 1;
                     quantity = 0;
+
                 }
+                if(quantity!=0 && quantity > 400){
+                
+                    updateZ(quantity,i, currentdate);
+                    plant_produced_fcfs[2] += 1;
+                    days_used_fcfs[2] += 1;
+                    if(quantity >= Z_CAPACITY)
+                    {
+                        quantity -= Z_CAPACITY;
+                    }
+                    else
+                    {
+                        quantity = 0;
+                    }
 
-
-
-            }
-            if(quantity!=0 && quantity<= 300 || quantity > 300)
-            {
-                updateX(quantity,i, currentdate);
-                plant_produced_fcfs[0] += 1;
-                days_used_fcfs[0] += 1;
-                if(quantity >= X_CAPACITY)
+                }
+                if(quantity!=0 && quantity <= 400 && quantity > 300 || quantity >400)
                 {
-                    quantity -= X_CAPACITY;
+                    updateY(quantity,i, currentdate);
+                    plant_produced_fcfs[1] += 1;
+                    days_used_fcfs[1] += 1;
+                    if(quantity >= Y_CAPACITY)
+                    {
+                        quantity -= Y_CAPACITY;
+                    }
+                    else
+                    {
+                        quantity = 0;
+                    }
+
+
+
                 }
-                else
+                if(quantity!=0 && quantity<= 300 || quantity > 300)
                 {
-                    quantity = 0;
+                    updateX(quantity,i, currentdate);
+                    plant_produced_fcfs[0] += 1;
+                    days_used_fcfs[0] += 1;
+                    if(quantity >= X_CAPACITY)
+                    {
+                        quantity -= X_CAPACITY;
+                    }
+                    else
+                    {
+                        quantity = 0;
+                    }
+
+
                 }
-
-
+                currentdate = get_next_day(currentdate);
             }
-            currentdate = get_next_day(currentdate);
         }
     }
 
@@ -610,7 +626,7 @@ int main2(){
     //RR(6);
     SJF(6);
     
-    pprintPlantDetails("Plant_X", startdate, enddate, Plant_X, 6);
+    printPlantDetails("Plant_X", startdate, enddate, Plant_X, 6);
     printPlantDetails("Plant_Y", startdate, enddate, Plant_Y, 6);
     printPlantDetails("Plant_Z", startdate, enddate, Plant_Z, 6);
 
