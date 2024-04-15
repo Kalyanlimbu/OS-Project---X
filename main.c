@@ -255,7 +255,7 @@ void printAnalysisReport(char* command, char* textFile, char orders[100][4][11],
     fprintf(text, "There are %d Orders ACCEPTED. Details are as follows:\n\n", orderno2 - rejected);
 
     fprintf(text, "ORDER NUMBER  START         END            DAYS      QUANTITY     PLANT\n");
-    fprintf(text, "==========================================================================\n");
+    fprintf(text, "==========================================================================\n");  
 
     for(int i = 0; i < orderno2; i++) {
         for(int j = 0; j < X_pointer; j++) {
@@ -311,6 +311,7 @@ void printAnalysisReport(char* command, char* textFile, char orders[100][4][11],
     performanceCalculation("Plant_Z", Plant_Z, Z_pointer, orders, orderno2, 300, &utilPercentage, &utilCounter, text);
 
     fprintf(text, "Overall of utilization:                           %.1f %c\n\n", (utilPercentage / utilCounter), '%');
+    fclose(text);
 }
 
 void FCFS(int orderno)
