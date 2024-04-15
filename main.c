@@ -3,15 +3,6 @@
 #include <unistd.h>
 #include <string.h>
 
-// addPEIOD 2024-06-01 2024-06-30
-// addORDER p000 2024-06-02 1200 shoes
-// addORDER p001 2024-06-03 800 socks
-// addORDER p002 2024-06-06 1000 pants
-// addORDER p003 2024-06-06 500 shirt
-// addORDER p004 2024-06-08 400 jacket
-// addORDER p005 2024-06-07 2000 hats
-// runPLS FCFS | printREPORT > report_99_FCFS.txt
-
 
 #define X_CAPACITY 300
 #define Y_CAPACITY 400
@@ -235,7 +226,7 @@ void printPlantDetails(char* plantName, char* startDate, char* endDate, char Pla
     printf("\n\n");
 }
 
-void performanceCalculation(char* plantName, char Plant[30][5][11], int pointerLen, char orders[100][4][11], int orderNo, int produceRate, float *utilPercentage, int *utilCounter){
+void performanceCalculation(char* plantName, char Plant[30][5][11], int pointerLen, char orders[100][4][11], int orderNo, int produceRate, float *utilPercentage, int *utilCounter, FILE* text){
     int totalDays = 0, totalQuantity = 0;
     for(int i = 0; i < orderNo; i++){
         for(int j = 0; j < pointerLen; j++){
@@ -251,74 +242,75 @@ void performanceCalculation(char* plantName, char Plant[30][5][11], int pointerL
     *utilPercentage += tmp;
     (*utilCounter)++;
 
-    printf("%s:\n", plantName);
-    printf("        Number of days in use:                    %d days\n", totalDays);
-    printf("        Number of products produced:              %d (in total)\n", totalQuantity);
-    printf("        Utilization of the plant:                 %.1f %c\n\n", tmp, '%');
+    fprintf(text, "%s:\n", plantName);
+    fprintf(text, "        Number of days in use:                    %d days\n", totalDays);
+    fprintf(text, "        Number of products produced:              %d (in total)\n", totalQuantity);
+    fprintf(text, "        Utilization of the plant:                 %.1f %c\n\n", tmp, '%');
 }
 
-void printAnalysisReport(char* command, char orders[100][4][11], int orderNo, char rejectedProducts[50][4][11], int rejectedNo) {
-    printf("***PLS Schedule Analysis Report***\n\n");
-    printf("Algorithm used: %s\n\n", command);
-    printf("There are %d Orders ACCEPTED. Details are as follows:\n\n", X_pointer + Y_pointer + Z_pointer);
+void printAnalysisReport(char* command, char* textFile, char orders[100][4][11], char rejectedProducts[50][4][11]) {
+    FILE* text = fopen(textFile, "w");
+    fprintf(text, "***PLS Schedule Analysis Report***\n\n");
+    fprintf(text, "Algorithm used: %s\n\n", command);
+    fprintf(text, "There are %d Orders ACCEPTED. Details are as follows:\n\n", orderno2 - rejected);
 
-    printf("ORDER NUMBER  START         END            DAYS      QUANTITY     PLANT\n");
-    printf("==========================================================================\n");
+    fprintf(text, "ORDER NUMBER  START         END            DAYS      QUANTITY     PLANT\n");
+    fprintf(text, "==========================================================================\n");
 
-    for(int i = 0; i < orderNo; i++) {
+    for(int i = 0; i < orderno2; i++) {
         for(int j = 0; j < X_pointer; j++) {
             if(strcmp(orders[i][0], Plant_X[j][2]) == 0) {
                 int diff = convertDateToNumber(Plant_X[j][4]) - convertDateToNumber(Plant_X[j][0]);
-                printf("%s          %s    %s        %d        %s ", Plant_X[j][2], Plant_X[j][0], Plant_X[j][4], diff, Plant_X[j][3]);
-                printf("       Plant_X\n");
+                fprintf(text, "%s          %s    %s        %d        %s ", Plant_X[j][2], Plant_X[j][0], Plant_X[j][4], diff, Plant_X[j][3]);
+                fprintf(text, "       Plant_X\n");
             }
         }
         for(int j = 0; j < Y_pointer; j++) {
             if(strcmp(orders[i][0], Plant_Y[j][2]) == 0) {
                 int diff = convertDateToNumber(Plant_Y[j][4]) - convertDateToNumber(Plant_Y[j][0]);
-                printf("%s          %s    %s        %d        %s ", Plant_Y[j][2], Plant_Y[j][0], Plant_Y[j][4], diff, Plant_Y[j][3]);
-                printf("       Plant_Y\n");
+                fprintf(text, "%s          %s    %s        %d        %s ", Plant_Y[j][2], Plant_Y[j][0], Plant_Y[j][4], diff, Plant_Y[j][3]);
+                fprintf(text, "       Plant_Y\n");
             }
         }
         for(int j = 0; j < Z_pointer; j++) {
             if(strcmp(orders[i][0], Plant_Z[j][2]) == 0) {
                 int diff = convertDateToNumber(Plant_Z[j][4]) - convertDateToNumber(Plant_Z[j][0]);
-                printf("%s          %s    %s        %d        %s ", Plant_Z[j][2], Plant_Z[j][0], Plant_Z[j][4], diff, Plant_Z[j][3]);
-                printf("       Plant_Z\n");
+                fprintf(text, "%s          %s    %s        %d        %s ", Plant_Z[j][2], Plant_Z[j][0], Plant_Z[j][4], diff, Plant_Z[j][3]);
+                fprintf(text, "       Plant_Z\n");
             }
         }
     }
-    printf("\n");
-    printf("                                   - End -                               \n");
-    printf("==========================================================================\n");
-    printf("\n\n");
+    fprintf(text, "\n");
+    fprintf(text, "                                   - End -                               \n");
+    fprintf(text, "==========================================================================\n");
+    fprintf(text, "\n\n");
 
-    printf("There are %d Orders REJECTED. Details are as follows:\n\n", rejectedNo);
-    printf("ORDER NUMBER      PRODUCT NAME      DUE DATE      QUANTITY\n");
-    printf("==========================================================================\n");
+    fprintf(text, "There are %d Orders REJECTED. Details are as follows:\n\n", rejected);
+    fprintf(text, "ORDER NUMBER      PRODUCT NAME      DUE DATE      QUANTITY\n");
+    fprintf(text, "==========================================================================\n");
     
-    for(int i = 0; i < orderNo; i++){
-        for(int j = 0; j < rejectedNo; j++){
+    for(int i = 0; i < orderno2; i++){
+        for(int j = 0; j < rejected; j++){
             if(strcmp(orders[i][0], rejectedProducts[j][0]) == 0){
-                printf("%s              %s             ", rejectedProducts[j][0], rejectedProducts[j][1]);
-                printf("%s      %s\n", rejectedProducts[j][2], rejectedProducts[j][3]);
+                fprintf(text, "%s              %s             ", rejectedProducts[j][0], rejectedProducts[j][1]);
+                fprintf(text, "%s      %s\n", rejectedProducts[j][2], rejectedProducts[j][3]);
             }
         }
     }
-    printf("\n");
-    printf("                                   - End -                               \n");
-    printf("==========================================================================\n");
-    printf("\n\n");
+    fprintf(text, "\n");
+    fprintf(text, "                                   - End -                               \n");
+    fprintf(text, "==========================================================================\n");
+    fprintf(text, "\n\n");
 
-    printf("***PERFORMANCE\n\n");
+    fprintf(text, "***PERFORMANCE\n\n");
     
     float utilPercentage = 0.0;
     int utilCounter = 0;
-    performanceCalculation("Plant_X", Plant_X, X_pointer, orders, orderNo, 300, &utilPercentage, &utilCounter);
-    performanceCalculation("Plant_Y", Plant_Y, Y_pointer, orders, orderNo, 300, &utilPercentage, &utilCounter);
-    performanceCalculation("Plant_Z", Plant_Z, Z_pointer, orders, orderNo, 300, &utilPercentage, &utilCounter);
+    performanceCalculation("Plant_X", Plant_X, X_pointer, orders, orderno2, 300, &utilPercentage, &utilCounter, text);
+    performanceCalculation("Plant_Y", Plant_Y, Y_pointer, orders, orderno2, 300, &utilPercentage, &utilCounter, text);
+    performanceCalculation("Plant_Z", Plant_Z, Z_pointer, orders, orderno2, 300, &utilPercentage, &utilCounter, text);
 
-    printf("Overall of utilization:                           %.1f %c\n\n", (utilPercentage / utilCounter), '%');
+    fprintf(text, "Overall of utilization:                           %.1f %c\n\n", (utilPercentage / utilCounter), '%');
 }
 
 void FCFS(int orderno)
@@ -330,94 +322,86 @@ void FCFS(int orderno)
     int i = 0;
     for(i = 0; i < orderno; i++)
     {
-        // checking if current date less than  or equal to end date
-        char using_Enddate[11];
-        strcpy(using_Enddate, enddate);
-        int number_using_Enddate = convertDateToNumber(using_Enddate);
         sscanf(orders[i][2], "%d", &quantity);
         char using_Currdate[11], using_Duedate[11];
         strcpy(using_Currdate, currentdate);
         strcpy(using_Duedate, orders[i][1]);
         int number_using_Currdate = convertDateToNumber(using_Currdate);
         int number_using_Duedate = convertDateToNumber(using_Duedate);
-        if(number_using_Currdate <= number_using_Enddate)
+
+        int remaining_Days = number_using_Duedate -  number_using_Currdate;
+
+        printf("Remaining days: %d\n", remaining_Days);
+        if (quantity > remaining_Days * 1200)
         {
-
-            int remaining_Days = (number_using_Duedate + 1) -  number_using_Currdate;
-    
-
-            printf("Remaining days: %d\n", remaining_Days);
-            if (quantity > remaining_Days * 1200)
-            {
-                store_Rejected_Products(i);
-                printf("Rejected a product\n");
-                continue;
+            store_Rejected_Products(i);
+            printf("Rejected a product\n");
+            continue;
             }
+        
+        while(quantity != 0)
+        {
+            if(quantity!=0 && quantity <= 700 && quantity > 500)
+            {
+                updateY(quantity,i, currentdate);
+                quantity  -= 400;
+                plant_produced_fcfs[1] += 1;
+                days_used_fcfs[1] += 1;
+                updateX(quantity,i, currentdate);
+                plant_produced_fcfs[0] += 1;
+                days_used_fcfs[0] += 1;
+                quantity = 0;
+
+            }
+            if(quantity!=0 && quantity > 400){
             
-            while(quantity != 0)
-            {
-                if(quantity!=0 && quantity <= 700 && quantity > 500)
+                updateZ(quantity,i, currentdate);
+                plant_produced_fcfs[2] += 1;
+                days_used_fcfs[2] += 1;
+                if(quantity >= Z_CAPACITY)
                 {
-                    updateY(quantity,i, currentdate);
-                    quantity  -= 400;
-                    plant_produced_fcfs[1] += 1;
-                    days_used_fcfs[1] += 1;
-                    updateX(quantity,i, currentdate);
-                    plant_produced_fcfs[0] += 1;
-                    days_used_fcfs[0] += 1;
+                    quantity -= Z_CAPACITY;
+                }
+                else
+                {
                     quantity = 0;
-
                 }
-                if(quantity!=0 && quantity > 400){
-                
-                    updateZ(quantity,i, currentdate);
-                    plant_produced_fcfs[2] += 1;
-                    days_used_fcfs[2] += 1;
-                    if(quantity >= Z_CAPACITY)
-                    {
-                        quantity -= Z_CAPACITY;
-                    }
-                    else
-                    {
-                        quantity = 0;
-                    }
 
-                }
-                if(quantity!=0 && quantity <= 400 && quantity > 300 || quantity >400)
-                {
-                    updateY(quantity,i, currentdate);
-                    plant_produced_fcfs[1] += 1;
-                    days_used_fcfs[1] += 1;
-                    if(quantity >= Y_CAPACITY)
-                    {
-                        quantity -= Y_CAPACITY;
-                    }
-                    else
-                    {
-                        quantity = 0;
-                    }
-
-
-
-                }
-                if(quantity!=0 && quantity<= 300 || quantity > 300)
-                {
-                    updateX(quantity,i, currentdate);
-                    plant_produced_fcfs[0] += 1;
-                    days_used_fcfs[0] += 1;
-                    if(quantity >= X_CAPACITY)
-                    {
-                        quantity -= X_CAPACITY;
-                    }
-                    else
-                    {
-                        quantity = 0;
-                    }
-
-
-                }
-                currentdate = get_next_day(currentdate);
             }
+            if(quantity!=0 && quantity <= 400 && quantity > 300 || quantity >400)
+            {
+                updateY(quantity,i, currentdate);
+                plant_produced_fcfs[1] += 1;
+                days_used_fcfs[1] += 1;
+                if(quantity >= Y_CAPACITY)
+                {
+                    quantity -= Y_CAPACITY;
+                }
+                else
+                {
+                    quantity = 0;
+                }
+
+
+
+            }
+            if(quantity!=0 && quantity<= 300 || quantity > 300)
+            {
+                updateX(quantity,i, currentdate);
+                plant_produced_fcfs[0] += 1;
+                days_used_fcfs[0] += 1;
+                if(quantity >= X_CAPACITY)
+                {
+                    quantity -= X_CAPACITY;
+                }
+                else
+                {
+                    quantity = 0;
+                }
+
+
+            }
+            currentdate = get_next_day(currentdate);
         }
     }
 
@@ -425,7 +409,6 @@ void FCFS(int orderno)
     printPlantDetails("Plant_Y", startdate, enddate, Plant_Y, 6);
     printPlantDetails("Plant_Z", startdate, enddate, Plant_Z, 6);
 
-    printAnalysisReport("RR", orders, 6, rejected_Products, 2);
 }
 
 
@@ -455,67 +438,7 @@ void SJF(int orderno){
     FCFS(orderno);
     copyOrdersArray(revert, orders,orderno);
 }
-// auxiliary parts necessary for bonus scheduler
-typedef struct {
-    int year;
-    int month;
-    int day;
-    int quantity;
-} Order;
 
-void extractOrder(char order[4][11], Order *o) {
-    // auxiliary function for the bonus scheduler
-    sscanf(order[1], "%d-%d-%d", &o->year, &o->month, &o->day);
-    sscanf(order[2], "%d", &o->quantity);
-}
-
-int compareOrders(Order a, Order b) {
-    // auxiliary function for the bonus scheduler
-    if (a.year != b.year)
-        return a.year - b.year;
-    if (a.month != b.month)
-        return a.month - b.month;
-    if (a.day != b.day)
-        return a.day - b.day;
-    return a.quantity - b.quantity;
-}
-
-void swapOrders(char orders[100][4][11], int i, int j) {
-    // auxiliary function for the bonus scheduler
-    char temp[4][11];
-    int k;
-
-    for (k = 0; k < 4; k++) {
-        strcpy(temp[k], orders[i][k]);
-        strcpy(orders[i][k], orders[j][k]);
-        strcpy(orders[j][k], temp[k]);
-    }
-}
-// BONUS SCHEDULER - Closest Deadlines ordered by shortest jobs
-void deadlinePriority(int orderno, char orders[100][4][11]) {
-    // Auxiliary array of pointers for sorted order
-    char revert[100][4][11];
-    copyOrdersArray(orders,revert,orderno);
-
-    // Sort the orders array with deadlines as the main priority and order size as the secondary priority
-    int i, j;
-    Order current, next;
-
-    for (i = 0; i < orderno - 1; i++) {
-        for (j = 0; j < orderno - i - 1; j++) {
-            extractOrder(orders[j], &current);
-            extractOrder(orders[j + 1], &next);
-
-            if (compareOrders(next, current) < 0) {
-                // Swap current and next
-                swapOrders(orders, j, j + 1);
-            }
-        }
-    }
-
-    FCFS(orderno);
-    copyOrdersArray(revert, orders,orderno);
-}
 void RR(int orderno){ //round-robin giving 1 day to each product
     char* currdate = startdate;
     int round = 0; //round number
@@ -630,8 +553,6 @@ int main2(){
     printPlantDetails("Plant_X", startdate, enddate, Plant_X, 6);
     printPlantDetails("Plant_Y", startdate, enddate, Plant_Y, 6);
     printPlantDetails("Plant_Z", startdate, enddate, Plant_Z, 6);
-
-    printAnalysisReport("RR", orders, 6, rejected_Products, 2);
     
     return 0;
 }
@@ -650,15 +571,14 @@ int substring(const char *str, const char *substr) {
 }
 
 
-
 void processBatchFile(char *filename) {
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
         fprintf(stderr, "Error opening file: %s\n", filename);
         return;
     }
-    
-    char line[50];
+
+    char line[150];
     while (fgets(line, sizeof(line), fp) != NULL) {
         // Remove the newline character from the line
         line[strcspn(line, "\n")] = '\0';
@@ -671,10 +591,6 @@ void processBatchFile(char *filename) {
 
             int field = 0;
             while (token != NULL && field < 4) {
-                if (orderno2 < 0 || orderno2 >= MAX_ORDERS) {
-                    fprintf(stderr, "Invalid order number\n");
-                    return;
-                }
                 strcpy(orders[orderno2][field], token);
                 token = strtok(NULL, " ");
                 field++;
@@ -698,7 +614,6 @@ void processBatchFile(char *filename) {
 
     fclose(fp);
 }
-
 
 int main(){
 
@@ -772,7 +687,14 @@ int main(){
             if (token != NULL) {
                 printf("Reading batch data from file: %s\n", token);
                 processBatchFile(token);
+
                 // Print the orders added from the batch file
+                for (int i = orderno2 - (MAX_ORDERS - orderno2); i < orderno2; i++) {
+                    printf("The orders[%d][0]: %s\n", i, orders[i][0]);
+                    printf("The orders[%d][1]: %s\n", i, orders[i][1]);
+                    printf("The orders[%d][2]: %s\n", i, orders[i][2]);
+                    printf("The orders[%d][3]: %s\n", i, orders[i][3]);
+                }
             } else {
                 fprintf(stderr, "Invalid command format for addBATCH\n");
             }
@@ -796,7 +718,7 @@ int main(){
                 else if(strcmp(scheduler[0],"SJF")==0){
                     SJF(orderno2);
                 }
-
+                printAnalysisReport(scheduler[0], scheduler[4], orders, rejected_Products);
                 // Implement the algorithm logic here
 
         } else if (substring(input, command5)) {
