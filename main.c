@@ -343,7 +343,8 @@ void FCFS(int orderno)
         if(number_using_Currdate <= number_using_Enddate)
         {
 
-            int remaining_Days = number_using_Duedate -  number_using_Currdate;
+            int remaining_Days = (number_using_Duedate + 1) -  number_using_Currdate;
+    
 
             printf("Remaining days: %d\n", remaining_Days);
             if (quantity > remaining_Days * 1200)
