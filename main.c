@@ -439,6 +439,67 @@ void SJF(int orderno){
     FCFS(orderno);
     copyOrdersArray(revert, orders,orderno);
 }
+// auxiliary parts necessary for bonus scheduler
+typedef struct {
+    int year;
+    int month;
+    int day;
+    int quantity;
+} Order;
+
+void extractOrder(char order[4][11], Order *o) {
+    // auxiliary function for the bonus scheduler
+    sscanf(order[1], "%d-%d-%d", &o->year, &o->month, &o->day);
+    sscanf(order[2], "%d", &o->quantity);
+}
+
+int compareOrders(Order a, Order b) {
+    // auxiliary function for the bonus scheduler
+    if (a.year != b.year)
+        return a.year - b.year;
+    if (a.month != b.month)
+        return a.month - b.month;
+    if (a.day != b.day)
+        return a.day - b.day;
+    return a.quantity - b.quantity;
+}
+
+void swapOrders(char orders[100][4][11], int i, int j) {
+    // auxiliary function for the bonus scheduler
+    char temp[4][11];
+    int k;
+
+    for (k = 0; k < 4; k++) {
+        strcpy(temp[k], orders[i][k]);
+        strcpy(orders[i][k], orders[j][k]);
+        strcpy(orders[j][k], temp[k]);
+    }
+}
+// BONUS SCHEDULER - Closest Deadlines ordered by shortest jobs
+void deadlinePriority(int orderno, char orders[100][4][11]) {
+    // Auxiliary array of pointers for sorted order
+    char revert[100][4][11];
+    copyOrdersArray(orders,revert,orderno);
+
+    // Sort the orders array with deadlines as the main priority and order size as the secondary priority
+    int i, j;
+    Order current, next;
+
+    for (i = 0; i < orderno - 1; i++) {
+        for (j = 0; j < orderno - i - 1; j++) {
+            extractOrder(orders[j], &current);
+            extractOrder(orders[j + 1], &next);
+
+            if (compareOrders(next, current) < 0) {
+                // Swap current and next
+                swapOrders(orders, j, j + 1);
+            }
+        }
+    }
+
+    FCFS(orderno);
+    copyOrdersArray(revert, orders,orderno);
+}
 
 void RR(int orderno){ //round-robin giving 1 day to each product
     char* currdate = startdate;
