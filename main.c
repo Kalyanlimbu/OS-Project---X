@@ -205,7 +205,6 @@ int isLeapYear(int year) {
     return 0;
 }
 
-// Helper function to get the number of days in a given month of a given year
 int getDaysInMonth(int year, int month) {
     switch (month) {
         case 1: case 3: case 5: case 7: case 8: case 10: case 12:
@@ -219,11 +218,10 @@ int getDaysInMonth(int year, int month) {
                 return 28;
             }
         default:
-            return 0; // Error: invalid month
+            return 0;
     }
 }
 
-// Function to increment a date by one day, modifies the input date
 void IncrementDate(char* dateStr) {
     int year, month, day;
     sscanf(dateStr, "%d-%d-%d", &year, &month, &day);
@@ -243,7 +241,6 @@ void IncrementDate(char* dateStr) {
 }
 
 void printPlantDetails(char* plantName, char* startDate, char* endDate, char Plant[30][5][11], int len, int mx){
-    // Formatting for the Plant
     printf(" __________________________________________________________________________\n");
     printf("|  %s (300 per day)                                                   |\n", plantName);
     printf("|  %s to %s                                                |\n", startdate, enddate);
@@ -989,5 +986,3 @@ int main(){
 
 //     }
 // }
-
-
