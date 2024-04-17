@@ -1,0 +1,52 @@
+***PLS Schedule Analysis Report***
+
+Algorithm used: FCFS
+
+There are 5 Orders ACCEPTED. Details are as follows:
+
+ORDER NUMBER  START         END            DAYS      QUANTITY     PLANT
+==========================================================================
+p000          2024-06-01    2024-06-02        1        300        Plant_X
+p000          2024-06-01    2024-06-02        1        400        Plant_Y
+p000          2024-06-01    2024-06-02        1        500        Plant_Z
+p001          2024-06-02    2024-06-03        1        300        Plant_X
+p001          2024-06-02    2024-06-03        1        500        Plant_Z
+p002          2024-06-03    2024-06-06        3        100        Plant_X
+p002          2024-06-03    2024-06-06        3        400        Plant_Y
+p002          2024-06-03    2024-06-06        3        500        Plant_Z
+p003          2024-06-04    2024-06-06        2        500        Plant_Z
+p004          2024-06-05    2024-06-08        3        400        Plant_Y
+
+                                   - End -                               
+==========================================================================
+
+
+There are 1 Orders REJECTED. Details are as follows:
+
+ORDER NUMBER      PRODUCT NAME      DUE DATE      QUANTITY
+==========================================================================
+p005              hats             2024-06-07      2000
+
+                                   - End -                               
+==========================================================================
+
+
+***PERFORMANCE
+
+Plant_X:
+        Number of days in use:                    5 days
+        Number of products produced:              700 (in total)
+        Utilization of the plant:                 10.0 %
+
+Plant_Y:
+        Number of days in use:                    7 days
+        Number of products produced:              1200 (in total)
+        Utilization of the plant:                 28.0 %
+
+Plant_Z:
+        Number of days in use:                    7 days
+        Number of products produced:              2000 (in total)
+        Utilization of the plant:                 42.0 %
+
+Overall of utilization:                           26.7 %
+
