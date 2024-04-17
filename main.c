@@ -198,7 +198,51 @@ void print_Rejected_Products(){
     return;
 }
 
-void printPlantDetails(char* plantName, char* startDate, char* endDate, char Plant[30][5][11], int len){
+int isLeapYear(int year) {
+    if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
+        return 1;
+    }
+    return 0;
+}
+
+// Helper function to get the number of days in a given month of a given year
+int getDaysInMonth(int year, int month) {
+    switch (month) {
+        case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+            return 31;
+        case 4: case 6: case 9: case 11:
+            return 30;
+        case 2:
+            if (isLeapYear(year)) {
+                return 29;
+            } else {
+                return 28;
+            }
+        default:
+            return 0; // Error: invalid month
+    }
+}
+
+// Function to increment a date by one day, modifies the input date
+void IncrementDate(char* dateStr) {
+    int year, month, day;
+    sscanf(dateStr, "%d-%d-%d", &year, &month, &day);
+
+    int daysInMonth = getDaysInMonth(year, month);
+    day++;
+    if (day > daysInMonth) {
+        day = 1;
+        month++;
+        if (month > 12) {
+            month = 1;
+            year++;
+        }
+    }
+
+    sprintf(dateStr, "%04d-%02d-%02d", year, month, day);
+}
+
+void printPlantDetails(char* plantName, char* startDate, char* endDate, char Plant[30][5][11], int len, int mx){
     // Formatting for the Plant
     printf(" __________________________________________________________________________\n");
     printf("|  %s (300 per day)                                                   |\n", plantName);
@@ -209,43 +253,80 @@ void printPlantDetails(char* plantName, char* startDate, char* endDate, char Pla
     printf("|              |              |              |  (Produced)  |              |\n");
     printf("|______________|______________|______________|______________|______________|\n");
 
-    // Printing Plant
-    for (int i = 0; i < len; i++) {
-        for (int j = 0; j < PLANT_ATTRIBUTES; j++) {
-            printf("| ");
-            for (int k = 0; k < 11; k++) {
-                printf("%c", Plant[i][j][k] ? Plant[i][j][k] : ' ');
-                // Need to implement NA checker
+    int size = 13;
+    char current_date[11];
+    strcpy(current_date, startDate);
+
+    for(int i = 0; i <= mx; i++){
+        int flag = 0;
+        printf("| %-*s", size, current_date);
+        for(int j = 0; j < len; j++){
+            if(strcmp(current_date, Plant[j][0]) == 0) {
+                printf("| %-*s", size, Plant[j][1]);
+                printf("| %-*s", size, Plant[j][2]);
+                printf("| %-*s", size, Plant[j][3]);
+                printf("| %-*s|", size, Plant[j][4]);
+                flag = 1;
             }
-            if(j == PLANT_ATTRIBUTES - 1) printf("  |");
-            else printf("  ");
+        }
+        if(flag == 0){
+            printf("| %-*s| %-*s| %-*s| %-*s|", size, "NA", size, "", size, "", size, "");
         }
         printf("\n");
         printf("|______________|______________|______________|______________|______________|\n");
+        IncrementDate(current_date);
     }
     printf("\n\n");
 }
 
-void performanceCalculation(char* plantName, char Plant[30][5][11], int pointerLen, char orders[100][4][11], int orderNo, int produceRate, float *utilPercentage, int *utilCounter, FILE* text){
+void printPlant(char* startDate, char* endDate, int orderNo){
+    int mx = 0;
+    for(int i = 0; i < X_pointer; i++){
+        int tmp = convertDateToNumber(Plant_X[i][0]) - convertDateToNumber(startDate);
+        if(mx < tmp){
+            mx = tmp;
+        }
+    }
+    for(int i = 0; i < Y_pointer; i++){
+        int tmp = convertDateToNumber(Plant_Y[i][0]) - convertDateToNumber(startDate);
+        if(mx < tmp){
+            mx = tmp;
+        }
+    }
+    for(int i = 0; i < Z_pointer; i++){
+        int tmp = convertDateToNumber(Plant_Z[i][0]) - convertDateToNumber(startDate);
+        if(mx < tmp){
+            mx = tmp;
+        }
+    }
+    printf("%d\n", mx);
+    printPlantDetails("Plant_X", startdate, enddate, Plant_X, orderNo, mx);
+    printPlantDetails("Plant_Y", startdate, enddate, Plant_Y, orderNo, mx);
+    printPlantDetails("Plant_Z", startdate, enddate, Plant_Z, orderNo, mx);
+}
+
+float performanceCalculation(char* plantName, char Plant[30][5][11], int pointerLen, char orders[100][4][11], int orderNo, int produceRate, FILE* text){
     int totalDays = 0, totalQuantity = 0;
     for(int i = 0; i < orderNo; i++){
         for(int j = 0; j < pointerLen; j++){
             if(strcmp(orders[i][0], Plant[j][2]) == 0) {
-                int diff = convertDateToNumber(Plant[j][4]) - convertDateToNumber(Plant[j][0]);
+                int diff = convertDateToNumber(Plant[j][4]) - convertDateToNumber(Plant[j][0]) + 1;
                 totalDays += diff;
                 totalQuantity += atoi(Plant[j][3]);
             }
         }
     }
-    
-    float tmp = totalQuantity / produceRate * totalDays;
-    *utilPercentage += tmp;
-    (*utilCounter)++;
+    float tmp2 = produceRate * (convertDateToNumber(enddate) - convertDateToNumber(startdate) + 1);
+    float tmp = totalQuantity / tmp2;
+
+    printf("%.1f %.3f\n", tmp2, tmp);
 
     fprintf(text, "%s:\n", plantName);
     fprintf(text, "        Number of days in use:                    %d days\n", totalDays);
     fprintf(text, "        Number of products produced:              %d (in total)\n", totalQuantity);
-    fprintf(text, "        Utilization of the plant:                 %.1f %c\n\n", tmp, '%');
+    fprintf(text, "        Utilization of the plant:                 %.3f %c\n\n", tmp, '%');
+
+    return tmp;
 }
 
 void printAnalysisReport(char* command, char* textFile, char orders[100][4][11], char rejectedProducts[50][4][11]) {
@@ -260,21 +341,21 @@ void printAnalysisReport(char* command, char* textFile, char orders[100][4][11],
     for(int i = 0; i < orderno2; i++) {
         for(int j = 0; j < X_pointer; j++) {
             if(strcmp(orders[i][0], Plant_X[j][2]) == 0) {
-                int diff = convertDateToNumber(Plant_X[j][4]) - convertDateToNumber(Plant_X[j][0]);
+                int diff = convertDateToNumber(Plant_X[j][4]) - convertDateToNumber(Plant_X[j][0]) + 1;
                 fprintf(text, "%s          %s    %s        %d        %s ", Plant_X[j][2], Plant_X[j][0], Plant_X[j][4], diff, Plant_X[j][3]);
                 fprintf(text, "       Plant_X\n");
             }
         }
         for(int j = 0; j < Y_pointer; j++) {
             if(strcmp(orders[i][0], Plant_Y[j][2]) == 0) {
-                int diff = convertDateToNumber(Plant_Y[j][4]) - convertDateToNumber(Plant_Y[j][0]);
+                int diff = convertDateToNumber(Plant_Y[j][4]) - convertDateToNumber(Plant_Y[j][0]) + 1;
                 fprintf(text, "%s          %s    %s        %d        %s ", Plant_Y[j][2], Plant_Y[j][0], Plant_Y[j][4], diff, Plant_Y[j][3]);
                 fprintf(text, "       Plant_Y\n");
             }
         }
         for(int j = 0; j < Z_pointer; j++) {
             if(strcmp(orders[i][0], Plant_Z[j][2]) == 0) {
-                int diff = convertDateToNumber(Plant_Z[j][4]) - convertDateToNumber(Plant_Z[j][0]);
+                int diff = convertDateToNumber(Plant_Z[j][4]) - convertDateToNumber(Plant_Z[j][0]) + 1;
                 fprintf(text, "%s          %s    %s        %d        %s ", Plant_Z[j][2], Plant_Z[j][0], Plant_Z[j][4], diff, Plant_Z[j][3]);
                 fprintf(text, "       Plant_Z\n");
             }
@@ -305,12 +386,11 @@ void printAnalysisReport(char* command, char* textFile, char orders[100][4][11],
     fprintf(text, "***PERFORMANCE\n\n");
     
     float utilPercentage = 0.0;
-    int utilCounter = 0;
-    performanceCalculation("Plant_X", Plant_X, X_pointer, orders, orderno2, 300, &utilPercentage, &utilCounter, text);
-    performanceCalculation("Plant_Y", Plant_Y, Y_pointer, orders, orderno2, 300, &utilPercentage, &utilCounter, text);
-    performanceCalculation("Plant_Z", Plant_Z, Z_pointer, orders, orderno2, 300, &utilPercentage, &utilCounter, text);
+    utilPercentage += performanceCalculation("Plant_X", Plant_X, X_pointer, orders, orderno2, 300, text);
+    utilPercentage += performanceCalculation("Plant_Y", Plant_Y, Y_pointer, orders, orderno2, 400, text);
+    utilPercentage += performanceCalculation("Plant_Z", Plant_Z, Z_pointer, orders, orderno2, 500, text);
 
-    fprintf(text, "Overall of utilization:                           %.1f %c\n\n", (utilPercentage / utilCounter), '%');
+    fprintf(text, "Overall of utilization:                           %.2f %c\n\n", (utilPercentage / 3), '%');
     fclose(text);
 }
 
@@ -406,9 +486,7 @@ void FCFS(int orderno)
         }
     }
 
-    printPlantDetails("Plant_X", startdate, enddate, Plant_X, 6);
-    printPlantDetails("Plant_Y", startdate, enddate, Plant_Y, 6);
-    printPlantDetails("Plant_Z", startdate, enddate, Plant_Z, 6);
+    printPlant(startdate, enddate, orderno2);
 
 }
 
@@ -436,67 +514,6 @@ void SJF(int orderno){
         }
         printf("\n"); // Print a newline for better separation between orders
     }
-    FCFS(orderno);
-    copyOrdersArray(revert, orders,orderno);
-}
-// auxiliary parts necessary for bonus scheduler
-typedef struct {
-    int year;
-    int month;
-    int day;
-    int quantity;
-} Order;
-
-void extractOrder(char order[4][11], Order *o) {
-    // auxiliary function for the bonus scheduler
-    sscanf(order[1], "%d-%d-%d", &o->year, &o->month, &o->day);
-    sscanf(order[2], "%d", &o->quantity);
-}
-
-int compareOrders(Order a, Order b) {
-    // auxiliary function for the bonus scheduler
-    if (a.year != b.year)
-        return a.year - b.year;
-    if (a.month != b.month)
-        return a.month - b.month;
-    if (a.day != b.day)
-        return a.day - b.day;
-    return a.quantity - b.quantity;
-}
-
-void swapOrders(char orders[100][4][11], int i, int j) {
-    // auxiliary function for the bonus scheduler
-    char temp[4][11];
-    int k;
-
-    for (k = 0; k < 4; k++) {
-        strcpy(temp[k], orders[i][k]);
-        strcpy(orders[i][k], orders[j][k]);
-        strcpy(orders[j][k], temp[k]);
-    }
-}
-// BONUS SCHEDULER - Closest Deadlines ordered by shortest jobs
-void deadlinePriority(int orderno, char orders[100][4][11]) {
-    // Auxiliary array of pointers for sorted order
-    char revert[100][4][11];
-    copyOrdersArray(orders,revert,orderno);
-
-    // Sort the orders array with deadlines as the main priority and order size as the secondary priority
-    int i, j;
-    Order current, next;
-
-    for (i = 0; i < orderno - 1; i++) {
-        for (j = 0; j < orderno - i - 1; j++) {
-            extractOrder(orders[j], &current);
-            extractOrder(orders[j + 1], &next);
-
-            if (compareOrders(next, current) < 0) {
-                // Swap current and next
-                swapOrders(orders, j, j + 1);
-            }
-        }
-    }
-
     FCFS(orderno);
     copyOrdersArray(revert, orders,orderno);
 }
@@ -612,10 +629,7 @@ int main2(){
     //RR(6);
     SJF(6);
     
-    printPlantDetails("Plant_X", startdate, enddate, Plant_X, 6);
-    printPlantDetails("Plant_Y", startdate, enddate, Plant_Y, 6);
-    printPlantDetails("Plant_Z", startdate, enddate, Plant_Z, 6);
-    
+    printPlant(startdate, enddate, orderno2);
     return 0;
 }
 
